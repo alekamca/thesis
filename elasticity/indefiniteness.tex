@@ -1,0 +1,136 @@
+Symmetry of the stiffness matrix $\mathbf{K}$ allows the use of certain Krylov
+methods, but positive definiteness is required for conjugate gradients. While
+$\mathbf{K}$ will be positive definite close to equilibrium (it is the energy
+Hessian), in practice Newton-Raphson may generate intermediate
+indefinite states. Like \cite{teran:2005:quasistatics}, we will modify
+$\mathbf{K}$ to guarantee definiteness while retaining the same nonlinear
+solution, a valid equilibrium configuration (though maybe via different iterates).
+% \RT{Is this true ? The Newton scheme  will still converge, but will it converge to the same solution ?}
+%This
+%modified Newton scheme does not change the computed nonlinear solution; the
+%algorithm converges to a perfectly valid equilibrium configuration, but while
+%iterating through a different sequence of estimates than the original
+%Newton-Raphson method.
+
+
+%in order to use the most efficient variants such as
+%conjugate gradients we additionaly require $\mathbf{K}$ to be positive definite. Since  is also the energy Hessian, it will be positive definite in the immediate vicinity of an
+%equilibrium configuration. In practice however, for skinning simulations where large skeletal motions between frames are common, the Newton-Raphson procedure will very frequently
+%generate indefinite systems before a converged solution is reached. In the spirit of \cite{teran:2005:quasistatics} we will enable the robust use of CG in this context, by modifying
+%the stiffness matrix $\mathbf{K}$ so that its definiteness is guaranteed. 
+
+Similar to \cite{teran:2005:quasistatics} we will conservatively enforce the definiteness of $\mathbf{K}$ by projecting each elemental stiffness matrix to its positive semi-definite
+counterpart, i.e.\ a matrix with the same eigenvectors, but with negative eigenvalues clamped to zero. Naturally, we want to avoid an explicit eigenanalysis of the $24\times 24$
+elemental stiffness $\mathbf{K}^e$, and even avoid forming it at altogether. We describe a procedure to perform this semi-definite projection in an inexpensive, matrix-free fashion. We
+will initially describe the definiteness projection for the simple one-point quadrature rule, defined in section \ref{sec:elasticity}. This will be a stepping stone in designing a
+definiteness fix for our stabilized quadrature rule, described in section \ref{sec:stabilization}. The elemental stiffness matrix is positive semi-definite if and only if
+$0\leq\delta\vec{x}^T\mathbf{K}^e\delta\vec{x}=-\delta\vec{x}^T\delta\vec{f}$, where $\delta\vec{x}$, $\delta\vec{f}$ are the stacked nodal position and force differentials for
+$\Omega_e$. Taking differentials on both sides of equation (\ref{eqn_nodal_forces}) we get: 
+$$
+\delta f_i^{(j)}
+=-V_e\sum_k\delta P_{jk}G_{ki}^e
+=-V_e\sum_{k,l,m}T_{jklm}\delta F^e_{lm}G_{ki}^e
+$$
+where $\mathcal{T}=[T_{ijkl}]$ is the fourth order tensor defined as the stress derivative $\mathcal{T}:=\partial\mathbf{P}/\partial\mathbf{F}$, or $T_{ijkl}=\partial P_{ij}/\partial
+F_{kl}$. We then write:
+$$
+-\delta\vec{x}^T\delta\vec{f}=-\sum_{i,j}\delta f_i^{(j)}\delta x_i^{(j)}
+=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\sum_iG_{ki}^e\delta x_i^{(j)}
+$$
+%$$
+%\stackrel{\mbox{\it\small(Eqn.\ref{eqn_discrete_gradient})}}{=}V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}  \delta F^e_{jk}
+%=V_e\left(\delta\mathbf{F}^e:\mathcal{T}:\delta\mathbf{F}^e\right).
+%$$
+Thus, $\mathbf{K}^e$ will be positive semi-definite, if and only if the fourth order tensor $\partial\mathbf{P}/\partial\mathbf{F}$ is positive definite as well (in the sense that
+$\delta\mathbf{F}:\mathcal{T}:\delta\mathbf{F}\geq 0$, for all $\delta\mathbf{F}$). At this point, consider a different 4th order tensor $\hat{\mathcal{T}}$ defined by
+$\delta\mathbf{P}=\mathcal{T}:\delta\mathbf{F}=\mathbf{R}[\hat{\mathcal{T}}:(\mathbf{R}^T\delta\mathbf{F})]$. Intuitively, if we define the \emph{unrotated} differentials
+$\delta\hat{\mathbf{P}}=\mathbf{R}^T\delta\mathbf{P}$, and $\delta\hat{\mathbf{F}}=\mathbf{R}^T\delta\mathbf{F}$, then $\hat{\mathcal{T}}$ is the tensor that maps
+$\delta\hat{\mathbf{P}}=\hat{\mathcal{T}}:\delta\hat{\mathbf{F}}$. Tensors $\mathcal{T}$ and $\hat{\mathcal{T}}$ are a similarity transform of one another; consequently they share the
+same eigenvalues, and performing the indefiniteness fix on one will guarantee the definiteness of the other. Using this definition and equations (\ref{eqn_stress_differential}) and
+(\ref{eqn_rotation_differential}), $\delta\hat{\mathbf{P}}$ reduces to:
+\begin{equation}
+\delta\hat{\mathbf{P}}=\hat{\mathcal{T}}:\delta\hat{\mathbf{F}}=
+2\mu\delta\hat{\mathbf{F}}\!+\!\lambda\tr(\delta\hat{\mathbf{F}})\mathbf{I}\!+\!\left\{\lambda\tr(\mathbf{S}\!-\!\mathbf{I})\!-\!2\mu\right\}\mathcal{S}\!:\!\delta\hat{\mathbf{F}}
+\label{eqn_rotated_dp}
+\end{equation}
+where $\mathcal{S}=\mathcal{E}:\left\{\tr(\mathbf{S})\mathbf{I}-\mathbf{S}\right\}^{-1}:\mathcal{E}^T$. Consider the decomposition of
+$\delta\hat{\mathbf{F}}\!=\!\delta\hat{\mathbf{F}}_{\mbox{\small sym}}\!+\!\delta\hat{\mathbf{F}}_{\mbox{\small skew}}$ into symmetric 
+$\delta\hat{\mathbf{F}}_{\mbox{\small sym}}\!=\!(\delta\hat{\mathbf{F}}\!+\!\delta\hat{\mathbf{F}}^T)/2$ and skew symmetric
+$\delta\hat{\mathbf{F}}_{\mbox{\small skew}}\!=\!(\delta\hat{\mathbf{F}}\!-\!\delta\hat{\mathbf{F}}^T)/2$ parts; also consider a similar decomposition of 
+$\delta\hat{\mathbf{P}}\!=\!\delta\hat{\mathbf{P}}_{\mbox{\small sym}}\!+\!\delta\hat{\mathbf{P}}_{\mbox{\small skew}}$. By collecting symmetric and skew symmetric terms from equation
+(\ref{eqn_rotated_dp}) we have:
+
+\begin{equation}
+\delta\hat{\mathbf{P}}_{\mbox{\small sym}}=2\mu\delta\hat{\mathbf{F}}_{\mbox{\small sym}}\!+\!\lambda\tr(\delta\hat{\mathbf{F}}_{\mbox{\small sym}})\mathbf{I}=\mathcal{T}_{\mbox{\small sym}}:\delta\hat{\mathbf{F}}_{\mbox{\small sym}}
+\label{eqn_dp_sym}
+\end{equation}
+\begin{equation}
+\hspace*{-.2in}\delta\hat{\mathbf{P}}_{\mbox{\small skew}}
+\!=\!2\mu\delta\hat{\mathbf{F}}_{\mbox{\small skew}}\!+\!\left\{\lambda\tr(\mathbf{S}\mbox{-}\mathbf{I})\mbox{-}2\mu\right\}\mathcal{S}\!:\!\delta\hat{\mathbf{F}}_{\mbox{\small skew}}
+\!=\!\mathcal{T}_{\mbox{\small skew}}\!:\!\delta\hat{\mathbf{F}}_{\mbox{\small skew}}
+\label{eqn_dp_skew}
+\end{equation}
+
+In essence, $\hat{\mathcal{T}}=\mathcal{T}_{\mbox{\small sym}}+\mathcal{T}_{\mbox{\small skew}}$ has a fully decoupled action on the two subspaces of symmetric, and skew symmetric
+matrices. Since the symmetric and skew subspaces are orthogonal, $\hat{\mathcal{T}}$ will be semi-definite, if and only if its skew and symmetric parts are semi-definite too. The
+tensor $\mathcal{T}_{\mbox{\small sym}}=2\mu\mathcal{I}_{\mbox{\small sym}}+\lambda\mathbf{I}\otimes\mathbf{I}$ ($\mathcal{I}_{\mbox{\small sym}}$ is the operator that projects a
+matrix onto its symmetric part) is always positive semi-definite; thus no modification is necessary. If $\mathcal{I}_{\mbox{\small skew}}$ is the operator that projects a matrix onto
+its skew symmetric part, we can verify that $2\mathcal{I}_{\mbox{\small skew}}=\mathcal{E}:\mathbf{I}:\mathcal{E}^T$. Thus, $\mathcal{T}_{\mbox{\small skew}}$ is written as:
+$$
+\mathcal{T}_{\mbox{\small skew}}=\mu\mathcal{E}:\mathbf{I}:\mathcal{E}^T+\left\{\lambda\tr(\mathbf{S}\!-\!\mathbf{I})\!-\!2\mu\right\}\left[\mathcal{E}\!:\!\left\{\tr(\mathbf{S})\mathbf{I}\!-\!\mathbf{S}\right\}^{-1}\!:\!\mathcal{E}^T\right]
+$$
+$$
+=\mathcal{E}\!:\!\mathbf{L}\!:\!\mathcal{E}^T,\ \mbox{where}\ \mathbf{L}=\mu\mathbf{I}+\left\{\lambda\tr(\mathbf{S}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{S})\mathbf{I}\!-\!\mathbf{S}\right\}^{-1}
+$$
+$\mathcal{E}$ is also an orthogonal (although not orthonormal) tensor, thus the definiteness of $\mathcal{T}_{\mbox{\small skew}}$ is equivalent with the definiteness of the $3\times 3$ 
+symmetric matrix $\mathbf{L}$, which can be easily projected to its positive definite part. In fact, if the method we used to compute the polar decomposition were to first compute the
+entire SVD $\mathbf{F}=\mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ of the deformation gradient, then we have $\mathbf{L}=\mathbf{V}\mathbf{L}_D\mathbf{V}^T$ where
+$$
+\mathbf{L}_D=\mu\mathbf{I}+\left\{\lambda\tr(\mathbf{\Sigma}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{\Sigma})\mathbf{I}\!-\!\mathbf{\Sigma}\right\}^{-1}
+$$
+is a diagonal matrix, whose diagonal matrices simply need to be clamped to zero, to ensure definiteness for $\mathbf{L}$, for $\mathcal{T}_{\mbox{\small skew}}$ and ultimately for the entire
+element stiffness matrix. In practical implementation, the matrix $\mathbf{L}$, projected to its semi-definite component, is precomputed and stored at the same time when the Polar Decomposition
+of each element is performed. Then, the definitions of this section are followed to successively construct 
+$\delta\hat{\mathbf{P}}_{\mbox{\small sym}}$ and \ $\delta\hat{\mathbf{P}}_{\mbox{\small skew}}$, using equations (\ref{eqn_dp_sym}),(\ref{eqn_dp_skew}), and ultimately
+$\delta\mathbf{P}=\mathbf{R}\delta\hat{\mathbf{P}}$. 
+
+So far, we have discussed how to correct the indefiniteness of the stiffness matrix arising from the (unstable) one-point quadrature technique. In light of the energy decomposition reflected
+in equation (\ref{eqn_psi_poisson_and_aux}) the difference in the discrete energy between the stable and unstable approaches, is the discrete quadrature that will be followed to
+integrate the part $\Psi_\Delta$. Our stable technique employs equation (\ref{eqn_quadrature_poisson}) for this task, while the original unstable technique uses one-point
+quadrature. In two spatial dimensions, if we denote by $E_\Delta^S$ and $E_\Delta^U$ the discrete integral associated with the Laplace term in the stable, and unstable variants
+respectively, we then have:
+\begin{eqnarray*}
+E_\Delta^U&=&\mu h^2\sum_{i=1}^2\left((F_{i1}^e)^2+(F_{i2}^e)^2\right)\\
+&=&\mu h^2\sum_{i=1}^2\left((\frac{F_{i1}^A+F_{i1}^B}{2})^2+(\frac{F_{i2}^C+F_{i2}^D}{2})^2\right)
+\end{eqnarray*}
+$$
+E_\Delta^U-E_\Delta^S\stackrel{\mbox{\small(\ref{eqn_quadrature_poisson})}}{=}\mu h^2\sum_{i=1}^2\left((\frac{F_{i1}^A-F_{i1}^B}{2})^2+(\frac{F_{i2}^C-F_{i2}^D}{2})^2\right)\geq 0
+$$
+Thus, we can interpret our stable discretization as adding the unconditionally convex term $E_\Delta^U-E_\Delta^S$ to the unstable energy discretization of the single-point
+approach. The indefiniteness fix described in the context of the unstable method can also be interpreted as augmenting the real stiffness matrix with a supplemental term
+$\mathbf{K}\gets\mathbf{K}+\mathbf{K}_{\mbox{\small supp}}$ that guarantees the definiteness of the resulting matrix. The last equation indicates that if the same
+``definiteness-boosting'' matrix $\mathbf{K}_{\mbox{\small supp}}$ is added to the stable discretization, definiteness will be guaranteed. Algorithm \ref{alg_indefiniteness_fix}
+summarizes the entire procedure that implements the ``auxiliary'' stress differential corresponding to the $\Psi_{\mbox{\small aux}}$ energy component. The differential of the
+additional force due to the Laplace term $\Psi_\Delta$ are computed as described in section \ref{sec:stabilization}.
+\begin{algorithm}[h]
+\caption{Computation of the stress differential corresponding to the auxiliary energy term $\Psi_{\mbox{\small aux}}$. Fixed to guarantee definiteness.}
+\label{alg_indefiniteness_fix}
+\begin{algorithmic}[1]
+\Function{Compute\_L}{$\mathbf{\Sigma},\mathbf{V},\mu,\lambda,\mathbf{L}$}
+\State $\mathbf{L}_D\gets\left\{\lambda\tr(\mathbf{\Sigma}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{\Sigma})\mathbf{I}\!-\!\mathbf{\Sigma}\right\}^{-1}$
+\State Clamp diagonal elements of $\mathbf{L}_D$ to a minimum value \\\nonumber\hspace*{.25in}of $(-\mu)$\Comment{Term $\Psi_\Delta$ will boost this eigenvalue by $\mu$}
+\State $\mathbf{L}\gets\mathbf{V}\mathbf{L}_D\mathbf{V}^T$
+\EndFunction
+\Function{dPauxDefiniteFix}{$\delta\mathbf{F},\mathbf{R},\mathbf{L}$}\Comment{Returns $\delta \mathbf{P}_{\mbox{\small aux}}$}
+\State $\delta\hat{\mathbf{F}}_{\mbox{\small sym}}\gets\Call{SymmetricPart}{\mathbf{R}^T\delta\mathbf{F}}$
+\State $\delta\hat{\mathbf{F}}_{\mbox{\small skew}}\gets\Call{SkewSymmetricPart}{\mathbf{R}^T\delta\mathbf{F}}$
+\State $\delta\hat{\mathbf{P}}_{\mbox{\small sym}}\gets\lambda\tr(\delta\hat{\mathbf{F}}_{\mbox{\small sym}})\mathbf{I}$
+\State $\delta\hat{\mathbf{P}}_{\mbox{\small skew}}\gets\mathcal{E}\!:\!\left\{\mathbf{L}(\mathcal{E}^T\!:\!\delta\hat{\mathbf{P}}_{\mbox{\small skew}})\right\}$
+\State $\delta\mathbf{P}_{\mbox{\small aux}}\gets\mathbf{R}\left(\delta\hat{\mathbf{P}}_{\mbox{\small sym}}+\delta\hat{\mathbf{P}}_{\mbox{\small skew}}\right)$
+\State \Return $\delta\mathbf{P}_{\mbox{\small aux}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+\input{elasticity/backward_euler}

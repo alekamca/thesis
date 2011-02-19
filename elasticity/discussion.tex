@@ -1,0 +1,39 @@
+%##    * Shape richness improving artistic experience
+%    * Speed as a game changer
+%    * GPU versus CPU
+%    * Future work : Physical parameters can still be unintuitive for artists.
+%    * Future work : Art direction.
+
+Originally, we were motivated by the desire to make true physically based
+elasticity practical for production character rigging. We found that beyond our
+expectations, artists were impressed with the shapes a physical deformer could
+provide with little manual effort. What usually took days of weight
+painting or pose example sculpting was now easy to achieve, and what was
+impossible, collision and contact, was now possible.
+
+A major decision in our project was to focus on optimizing for the CPU,
+because we were familiar with CPU optimization and because
+simulations often need to run on clusters without GPUs.  At the same
+time we recognize GPUs are becoming more important because of their power and we
+sought to experiment with the GPU. Though we have little experience with the
+GPU, we believe our method will perform even better on the GPU with further
+optimizations. Further, we note that most GPU experiments tend to compare
+against relatively unoptimized CPU implementations, whereas our CPU
+implementation was heavily optimized. Regardless we suspect that the GPU
+implementation can still be improved significantly. 
+
+Obviously, speed has been a major hurdle for the use of physical simulation in
+production, so the fact that our simulations can run at near-interactive rates,
+changes the game for artists. Even so, there is plenty of future work to do. One
+area is making the parameters (like the Young's modulus) more intuitive for
+artists to control, and another is allowing art direction in other ways, such as optimized
+control (which also requires fast solvers). But even without this future work, we
+believe that our contribution will help create the next generation of appealing
+characters. 
+
+% In conclusion, we introduced a new stable corotated linear discretization that
+% is robust, requires only one polar decomposition per cell, handles contact
+% collision and constraints. We demonstrated a new polar decomposition algorithm
+% that requires no trigonometric functions and is 40x faster than any other known
+% implementation.  We implemented our new method on both the CPU and GPU and
+% demonstrated its efficacy on several production quality examples.

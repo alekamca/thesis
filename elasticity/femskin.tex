@@ -1,0 +1,55 @@
+
+% \floatname{algorithm}{Table}
+
+\newtheorem{lemma}{Lemma}
+
+
+\chapter{Efficient elasticity for character skinning with contact and collisions}
+\begin{figure}[!ht]
+\includegraphics[width=\linewidth]{elasticity/figures/teaser3}
+  \caption{Our method takes a geometric internal skeleton (left) and a source
+    surface mesh (not pictured) as input. Based on a hexahedral lattice (center)
+    it then simulates a deformed surface (right) obeying self-collision and volumetric
+    elasticity. The example shown here has 106,567 cells and simulates at 5.5
+    seconds per frame.}
+\end{figure}
+
+\section{Introduction}
+\label{sec:intro}
+\input{elasticity/intro}
+
+\section{Related work}
+\label{sec:relatedwork}
+\input{elasticity/relatedwork}
+
+\section{Elasticity and discretization}
+\label{sec:elasticity}
+\input{elasticity/elasticity}
+
+\section{Stabilization}
+\label{sec:stabilization}
+\input{elasticity/stabilization}
+
+\section{Indefiniteness correction}
+\label{sec:indefiniteness}
+\input{elasticity/indefiniteness}
+
+\section{Constraints and collisions}
+\label{sec:constraints}
+\input{elasticity/constraints}
+
+\section{Multigrid}
+\label{sec:multigrid}
+\input{elasticity/multigrid}
+
+\section{Optimization}
+\label{sec:implementation}
+\input{elasticity/implementation}
+
+\section{Results}
+\label{sec:results}
+\input{elasticity/results}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{elasticity/discussion}

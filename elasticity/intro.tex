@@ -1,0 +1,36 @@
+% Existing options
+Creating appealing characters is essential for modern feature animation. One challenging aspect is the production of life-like deformations for soft tissues comprising both humans and animals. In order to provide the necessary control and performance for an animator, such deformations are typically computed using a skinning technique and/or an example based interpolation method. On the other hand, physical simulation of flesh-like material is usually avoided or relegated to an offline process due to its high computational cost. However, simulations create a range of very desirable effects, like squash-and-stretch and contact deformations. The latter is especially important as it can guarantee pinch-free geometry for subsequent simulations like cloth and hair. 
+
+%With time, artists can compensate for the lack of available interactive simulation by tweaking procedural models. Unfortunately, this requires a large amount of effort (potentially weeks per character), so as a consequence the difference in quality between primary and secondary characters can be quite large with existing techniques.
+
+% We want sim to work better
+Although the benefits of solving the equations of the underlying physical laws for character deformation are clear, computational methods are traditionally far too slow to accommodate the rapid interaction demanded by animators. Many simplified approaches to physical simulation can satisfy interactivity demands, but any such approach must provide all of the following functionality to be useful in production: (1) robustness to large deformation, (2) support for high-resolution geometric detail, (3) fast and accurate collision response (both self and external objects). Ideally, for rigging, it should also provide (4) path independent deformations determined completely by a kinematic skeleton. However, this may not be possible since contact deformations in general depend on the path taken to the colliding state.
+
+% Instability in the presence of large deformation is a notoriously common problem in Lagrangian simulation of elasticity, however it is unacceptable in a production environment and must therefore be removed by some means. Computational cost for physics based models increases with spatial resolution. A common acceleration is to simply reduce the complexity of the computation model to a few thousand degrees of freedom. Unfortunately, this does not provide the same range of deformations achievable with procedural methods and is therefore inferior in as an animation tool. Perhaps the most significant deficiency of procedural models is the inability to resolve collision/contact phenomena. 
+
+% confounding aspect of skinning procedures is self and external object collision. The inherent inability of procedural models to resolve collision/contact phenomena is the major motivation for simulation based techniques. Any simplified model that does not robustly and interactively resolve collision phenomena is therefore significantly lacking. Finally, for skeleton driven characters, the deformation of the skin and soft tissues must be completely determined by the kinematics of the rig. This is only achievable with a quasistatic assumption for the governing equations of hyperelasticity. However, these equations are non-linear and indefinite and therefore comparatively difficult to solve.
+
+We present a novel algorithmic framework for the simulation of hyperelastic soft tissues that drastically improves each aspect discussed above compared to existing techniques. Our approach is robust to large deformation (even inverted configurations) and extremely stable by virtue of careful treatment of linearization. We present a new multigrid approach to efficiently support hundreds of thousands of degrees of freedom (rather than the few thousands typical of existing techniques) in a production environment. Furthermore, these performance and robustness improvements are guaranteed in the presence of both collision and quasistatic/implicit time stepping techniques. The result is a significant advance in the applicability of hyperelastic simulation to skeleton driven character skinning. We demonstrate the impact of these advances in a complete production system for physics-based skinning of skeletally driven characters. 
+
+%% theoretical contributions
+%At the theoretical level, we present a novel discretization of co-rotational
+%linear elasticity. This discretization is based on a hexahedral grid, and by
+%analyzing the properties of the co-rotational formulation we minimize both the
+%number of quadrature points and polar decompositions required. The linearization
+%in co-rotational elasticity is often indefinite, but we guarantee stability in
+%the presence of both indefiniteness and inversions. Finally, we show how to
+%solve the problem efficiently with a multigrid approach.
+
+%% implemention contributions
+
+%Targeting practical utilization requires the implementation to be as efficient as possible. Our discretization is designed to be cache and streaming friendly and we balance the tradeoff between computation and memory bandwidth. The discretization also allows us to compute just a single SVD per cell as opposed to 8 SVDs for a standard Gauss quadrature rule. To further accelerate the computations we present a new branch-free algorithm for computing SVDs. This by itself is 40 times faster than what has previously been reported \cite{Rivers:2007:FFL,Kopp08}. In practice we have implemented and tested our entire system both on multithreaded CPUs as well as in the CUDA GPU framework. Unlike many efforts that focus on performance, we handle collision, self-collision, and soft constraints, all of which are essential in a production environment.
+
+%% roadmap
+%\todo{This needs work} The rest of the paper proceeds as follows:
+%In section~\ref{sec:elasticity} we describe our elastic model followed by
+%section~\ref{sec:constraints} which discusses constraints and collisions.  Then
+%in section~\ref{sec:multigrid} we show how the equations are efficiently solved
+%with multigrid.  Implementation details concerning GPU/CPU and performance are
+%discussed in section~\ref{sec:implementation}. Finally we show our method
+%applied to actual production examples in section~\ref{sec:results} and 
+%we discuss the technique in section~\ref{sec:discussion}.

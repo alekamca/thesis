@@ -1,0 +1,22 @@
+
+\section{Dynamics}
+Our method extends trivially to dynamic simulations that include inertial effects. However, it is important to note that the indefiniteness encountered in quasistatic time stepping also arises in implicit time stepping for dynamics. Fortunately, the definiteness fix outlined above can be used in this setting as well. Here we will outline why this indefiniteness is increasingly likely to occur when performing interactive high-resolution simulation. In this case, we typically desire a fixed temporal resolution of $\Delta{t}\approx\frac{1}{30}$ (to take as few timesteps as possible). Using the common backward Euler time stepping scheme for illustration, and assuming that the resulting non-linear equations are solved with Newton-Raphson's method, the following update equation must be solved for the increment $\delta\vec{{x}}$ in the $k^\textrm{th}$ iteration:
+% To demonstrate this fact, let us examine the comparatively simple case of backward Euler time stepping. Here, our discrete system of equations is:
+% $$
+% \frac{\vec{x}^{n+1}-\vec{x}^{n}}{\Delta{t}} = \vec{v}^{n+1}\ \ \mbox{and}\ \ 
+% \mathbf{M}\left(\frac{\vec{v}^{n+1}-\vec{v}^{n}}{\Delta{t}}\right) = \vec{f}(\vec{x}^{n+1})
+% $$
+% where $\mathbf{M}$ is the mass matrix associated with the material of interest. 
+% %
+% % For example, in a finite element based discretization one would use $M_{ij}=\int_{\Omega_0}{\rho(\mathbf{X})}{N_i}{N_j}d\mathbf{X}$ where $N_i$ and $N_j$ are the interpolating functions associated with each degree of freedom and $\rho$ is the mass density of the material. However, in graphics it is common to use a diagonal approximation (or mass lumping approximation) to this matrix obtained by summing each row: $M^\textrm{d}_{ii}=\sum_jM_{ij}$. This is equivalent to assigning each node an equal portion of volume of each of its incident elements and then determining the mass of the node as density times this volume. For example, in a tetrahedron based approximation each node would be given one fourth of the volume of each of its incident tetrahedra. 
+% %
+% We can solve this non-linear system by first eliminating $\vec{v}^{n+1}$ to get
+% $$
+% \mathbf{M}\left(\vec{x}^{n+1}-\vec{x}^{n}\right) = \Delta{t}\mathbf{M}\vec{v}^n + \Delta{t}^2\vec{f}(\vec{x}^{n+1})
+% %\mathbf{M}\left(\frac{\frac{\vec{x}^{n+1}-\vec{x}^{n}}{\Delta{t}}-\vec{v}^{n}}{\Delta{t}}\right)=\vec{f}(\vec{x}^{n+1})
+% $$
+% and then performing Newton iteration for $\vec{x}^{n+1}$. At the $k^\textrm{th}$ Newton iteration, we update an approximation to $\vec{x}^{n+1}$ given by $\vec{x}^{n+1}_{k+1}= \vec{x}^{n+1}_{k}+ \vec{\delta{x}}$ by solving the system
+$$
+\mathbf{K}^\textrm{BE}(\vec{x}^{n+1}_{k}) \delta\vec{{x}}=\Delta{t}\mathbf{M} \vec{v}^n+\Delta{t}^2 \vec{f}(\vec{x}^{n+1}_{k})
+$$
+Here $\mathbf{K}^\textrm{BE} = \mathbf{M}+\Delta{t}^2\mathbf{K}(\vec{x}^{n+1}_{k})$, and $\mathbf{M}$ is the mass matrix. The indefiniteness of $\mathbf{K}(\vec{x}^{n+1}_{k})$ can thus be seen to potentially cause indefiniteness of the backward Euler system matrix $\mathbf{K}^\textrm{BE}(\vec{x}^{n+1}_{k})$. Specifically, there are three factors that will conspire to yield indefiniteness in the  backward Euler system matrix: time step size ($\Delta{t}$), nodal mass ($M_{ii}$) and relative magnitude of elasticity parameters ($\mu$,$\lambda$). It may be tempting to adjust these parameters to provide a definite backward Euler system matrix. For example larger nodal mass, smaller $\Delta{t}$ and smaller $\mu,\lambda$ have a better chance of yielding a definite matrix. However, altering the nodal mass or elasticity coefficients would be equivalent to altering the behavior of the material inherent in the governing equations and should therefore be considered off limits. Secondly, when interactivity is desired the time step cannot be decreased arbitrarily. Furthermore, it is important to note that the nodal mass is proportionate to the volume associated with each node. Therefore, as we increase the discrete spatial resolution of our domain, the nodal mass decreases thereby increasing the likelihood of encountering an indefinite backward Euler system matrix as it would behave more and more like the indefinite $\mathbf{K}(\vec{x}^{n+1}_{k})$. Therefore, we see that when maximum performance and high resolution are desired, indefiniteness in the backward Euler system matrix is a distinct possibility. Fortunately, the definiteness fix outline above for $\mathbf{K}(\vec{x}^{n+1}_{k})$ suffices to guarantee definiteness of the backward Euler system matrix.
