@@ -10,24 +10,24 @@
 \end{figure*}
 
 
-\section{Introduction}
-Incompressible flows have proven very effective at generating many compelling effects in computer graphics including free surface, multiphase and viscoelastic fluids, smoke and fire. One
-of the most popular techniques for enforcing the incompressibility constraint is MAC grid based projection as pioneered by \cite{HW65}. They showed that for simulations on a regular
-Cartesian lattice, staggering velocity components on cell faces and pressures at cell centers gives rise to a natural means for projecting such a staggered velocity field to a discretely
-divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
-fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
-in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
-popularized in computer graphics by \cite{FM96} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
-gradient (ICPCG) was more efficient. This has since become a very widely adopted approach for voxelized Poisson and has been used for smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as continuum models for solids such as sand \cite{ZB05} and hair \cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
-\cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,ZB05}. There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a variational approach that retains the same sparsity of discretization while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
+%\section{Introduction}
+%Incompressible flows have proven very effective at generating many compelling effects in computer graphics including free surface, multiphase and viscoelastic fluids, smoke and fire. 
+%One
+%of the most popular techniques for enforcing the incompressibility constraint is MAC grid based projection as pioneered by \cite{HW65}. They showed that for simulations on a regular
+%Cartesian lattice, staggering velocity components on cell faces and pressures at cell centers gives rise to a natural means for projecting such a staggered velocity field to a discretely
+%divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
+%fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
+%in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
+%popularized in computer graphics by \cite{FM96} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
+%gradient (ICPCG) was more efficient. This has since become a very widely adopted approach for voxelized Poisson and has been used for smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as continuum models for solids such as sand \cite{ZB05} and hair \cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
+%\cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,ZB05}. There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a variational approach that retains the same sparsity of discretization while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
+%
+%Incomplete Cholesky preconditioned CG remains the state of the art for voxelized Poisson; however, at high resolutions, it becomes impractical due to the cost of recomputing the preconditioner as the domain changes and the increased number of PCG iterations needed to reduce the residual on large grids.  
+%Although ICPCG certainly offers an acceleration over unpreconditioned CG, it is still impractical at high resolutions since the required number of iterations increases drastically with the size of the problem, and the cost of updating and explicitly storing the preconditioner (a principally non-parallel construction process) 
+%is very high for large domains.  Furthermore, since ICPCG involves sparse back-substitution, it cannot be parallelized without further modification \cite{Hughes:2007:physicalsimulation}.
+%Whereas multigrid methods have the potential for constant asymptotic convergence rates, our purely geometric multigrid preconditioned conjugate gradient algorithm is the \emph{first} in the graphics literature to demonstrate these convergence rates on the highly irregular voxelized domains common to free surface simulation.
 
-Incomplete Cholesky preconditioned CG remains the state of the art for voxelized Poisson.
-%; however, at high resolutions, it becomes impractical due to the cost of recomputing the preconditioner as the domain changes and the increased number of PCG iterations needed to reduce the residual on large grids.  
-Although ICPCG certainly offers an acceleration over unpreconditioned CG, it is still impractical at high resolutions since the required number of iterations increases drastically with the size of the problem, and the cost of updating and explicitly storing the preconditioner %(a principally non-parallel construction process) 
-is very high for large domains.  Furthermore, since ICPCG involves sparse back-substitution, it cannot be parallelized without further modification \cite{Hughes:2007:physicalsimulation}.
-Whereas multigrid methods have the potential for constant asymptotic convergence rates, our purely geometric multigrid preconditioned conjugate gradient algorithm is the \emph{first} in the graphics literature to demonstrate these convergence rates on the highly irregular voxelized domains common to free surface simulation.
-
-\section*{Our main contributions}
+%\section*{Our main contributions}
 %\vspace*{-4pt}
 
 % \noindent$\bullet$  We solve for the true solution of the voxelized Poisson equation at full resolution.  A number of recent works have focused on alternative simplified approximations to enforce incompressibility, citing the bottleneck of solving the Poisson equation at high resolutions \cite{HG09}.   Our method allows us to efficiently solve for incompressibility via pressure projection on large grids, effectively eliminating the bottleneck, and we demonstrate the effectiveness of our technique when applied to high resolution fluid simulations.  
@@ -41,6 +41,12 @@ In comparison to widely-used ICPCG solvers, our method \emph{requires less stora
 % \vspace*{-.05in}
 \section{Related Work}
 % \vspace*{-.05in}
+
+Incomplete Cholesky preconditioned CG remains the state of the art for voxelized Poisson; however, at high resolutions, it becomes impractical due to the cost of recomputing the preconditioner as the domain changes and the increased number of PCG iterations needed to reduce the residual on large grids.  
+Although ICPCG certainly offers an acceleration over unpreconditioned CG, it is still impractical at high resolutions since the required number of iterations increases drastically with the size of the problem, and the cost of updating and explicitly storing the preconditioner (a principally non-parallel construction process) 
+is very high for large domains.  Furthermore, since ICPCG involves sparse back-substitution, it cannot be parallelized without further modification \cite{Hughes:2007:physicalsimulation}.
+Whereas multigrid methods have the potential for constant asymptotic convergence rates, our purely geometric multigrid preconditioned conjugate gradient algorithm is the \emph{first} in the graphics literature to demonstrate these convergence rates on the highly irregular voxelized domains common to free surface simulation.
+
 Multigrid methods have proven effective for a number of applications in graphics including image processing \cite{KH08,BWK06,RC03}, smoke simulation \cite{MCPN08}, mesh deformation \cite{SYBF06}, thin shells \cite{green:2002:subdivision}, cloth simulation \cite{Oh:2008:APF}, fluid simulation \cite{CNF07,CTG10}, geometry processing \cite{ni:2004:multigrid}, deformable solids simulation \cite{OGR07}, rendering \cite{Stam95multiplescattering,HMB05}, and have been efficiently ported to the GPU \cite{BFGS03,goodnight:2003:multigrid,GSMMWBT08}. While the majority of works in this area either focused on rectangular domains or algebraic multigrid formulations on irregular geometries, there are some notable geometric multigrid solutions for irregular domains. \cite{HMB05} and \cite{CLB09} embed their irregular geometry into regular lattices, producing irregular stencils. \cite{RC03,Oh:2008:APF} use a coarse-to-fine geometric hierarchy which ensures mesh alignment across levels, but these methods require the geometry to be fully resolved at the coarsest level and thus are impractical for resolving fine fluid features.   \cite{SAB99} show that using multigrid as a preconditioner to CG rather rather than a stand-alone solver can alleviate instability issues on some problems.  Multigrid preconditioned CG for the Poisson equation on rectangular grids can be found in \cite{T93} and the algorithm is parallelized in \cite{TO94} and later \cite{AF96}.  \cite{KH08} introduced a higher-order parallel multigrid solver for large rectangular images. 
 % 
 % For high resolution fluid simulations, incomplete Cholesky preconditioned CG can be impractical due the cost of recomputing the preconditioner as the domain changes and the large number of
