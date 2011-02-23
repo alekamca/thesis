@@ -1,0 +1,107 @@
+\chapter{Introduction}
+\section{Incompressible flows in computer animation}
+Incompressible flows have proven very effective at generating many compelling effects in computer graphics including free surface, multiphase and viscoelastic fluids, smoke and fire.
+	\subsection{Enforcing incompressibility via projection methods}
+	
+	\subsection{Numerical discretizations}
+	One of the most popular techniques for enforcing the incompressibility constraint is MAC grid based projection as pioneered by \cite{HW65}. They showed that for simulations on a regular
+Cartesian lattice, staggering velocity components on cell faces and pressures at cell centers gives rise to a natural means for projecting such a staggered velocity field to a discretely
+divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
+fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
+in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
+popularized in computer graphics by \cite{FM96} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
+gradient (ICPCG) was more efficient. This has since become a very widely adopted approach for voxelized Poisson and has been used for smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as continuum models for solids such as sand \cite{ZB05} and hair \cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
+\cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,ZB05}. There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a variational approach that retains the same sparsity of discretization while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
+
+\section{Solids simulation for character animation}
+	\subsection{Hair}
+	
+Simulating hair on a virtual character remains one of the most
+challenging aspects of computer graphics. As hair is an integral
+part of creating many virtual characters, the problem is especially important.
+Unfortunately, the massive number of hairs interacting and colliding
+makes this task especially challenging. Many approximations for
+simulating hair exist, but they typically fail to provide the amount of
+detail that real hair exhibits. Several applications, such as feature
+films, aim to capture the high degree of complexity caused by several 
+thousand interacting hair strands.
+
+		\subsubsection{Strand dynamics}
+		Many hair simulation techniques consider different geometric and constitutive models
+for modeling individual hair strands or clumps of hair starting with
+mass spring systems \cite{rosenblum:1991:hair} and projective dynamics
+\cite{anjyo:1992:hair}.  Mass/spring simulated lattice deformers can
+be added to model torsion
+\cite{plante:2002:hair-complexity,selle:2008:hair}.
+Rigid body chaining methods are also commonly used
+\cite{brown:2004:real-time-knot,choe:2005:simulating-complex-hair,hadap:2006:orientedstrands}.
+Techniques based on elastic rod theory have become popular
+starting with \cite{pai:2002:strands} and continuing with
+\cite{gregoire:2006:interactive-simulation-one-dimensional,bertails:2006:superhelices}.
+\cite{spillmann:2007:corde} also uses elastic rod theory but
+adaptively changes the number of points that define the hair curve.
+Most recently, \cite{bergou:2008:elastic-rods} provides a novel
+modeling of twist as deviation from a canonical frame as well as a
+method to evolve this separately quasistatically. Work in strand
+dynamics has been extensive, and our technique can be used with the
+practitioner's model of choice, but for simplicity we use
+the mass/spring model.
+
+		\subsubsection{Hair interaction and complexity}
+		
+The simplest (but most expensive) approach to hair complexity
+management is simulating and rendering every hair
+\cite{rosenblum:1991:hair,anjyo:1992:hair,selle:2008:hair}. While this
+theoretically yields the most detail, it is the most intractable,
+especially if self-collisions are considered.  Thus most practitioners
+use a clumping or continuum level of detail scheme that trades
+accuracy for computational tractability:
+
+\textbf{Continuum models.}  \cite{hadap:2001:continuum-hair} uses a Lagrangian
+fluid (smoothed particle hydrodynamics) technique to model fluid forces on a
+mass/spring system. While this efficiently handles bulk behavior, detailed hair
+behavior is lost. In addition, since smoothed particle hydrodynamics (SPH) is
+used, forcing fluid interaction through spring like forces, this approach is
+effectively as numerically difficult as standard self-repulsion spring forces.
+\cite{bando:2003:hair-loosely-connected-particles} also uses a continuum
+approach while discarding particle connectivity for real-time
+applications. Unfortunately, this results in visual artifacts in renderings
+because of the lack of connectivity in addition to the continuum's loss of high
+fidelity detail.  \cite{petrovic:2005:levelset-hair} presented a continuum
+approach that rasterized hair to an Eulerian velocity field and level set with
+the goal of reducing computational complexity, rather than improving on
+fidelity. Dynamics on the grid was limited to repeated averaging (an
+approximation of viscosity) to obtain friction effects. Unlike our method,
+they did not consider the incompressibility or other fluid behaviors that could
+be imparted on the velocity field. In addition, the goal of the work was to
+model relatively simple hairstyles on stylized characters, so the detail lost by
+using a coarse grid was acceptable for their application.
+
+\textbf{Clumped models.}  There are many techniques that simulate hair
+interactions through a sparse set of disjoint guides that collide with one
+another
+\cite{bertails:2006:superhelices,hadap:2006:orientedstrands,gupta:2006:real-time-hair,chang:2002:mutualinteractions}.
+A greater set of rendered hair strands are then either interpolated between
+these guides or clumped to the guide strands.
+\cite{plante:2002:hair-complexity} used a lattice whose vertices were simulated
+with a mass/spring model to define many more interpolated
+hairs. \cite{choe:2005:simulating-complex-hair} synthesized additional hairs
+from a sparse set of simulated guide hairs with a statistical
+model. \cite{bertails:2006:superhelices} used a combination of interpolation and
+clumping to generate rendered strands.  Many clumped techniques also use
+adaptivity to merge or split groups of hair to reduce computation where and when
+the required detail is low
+\cite{bertails:2003:adaptive-wisp-tree,ward:2003:modeling-hair-lod,ward:2003:adaptive-grouping-hair}. The
+use of sparse clumps often allows the use of cheap repulsion penalties as
+opposed to geometric collisions because guides are expected to have
+thickness, and in Section~\ref{sec:collisions} we will discuss how this breaks
+down with thousands of guides.
+	\subsection{Skeleton driven skinning}
+	Creating appealing characters is essential for modern feature animation. One challenging aspect is the production of life-like deformations for soft tissues comprising both humans and animals. In order to provide the necessary control and performance for an animator, such deformations are typically computed using a skinning technique and/or an example based interpolation method. On the other hand, physical simulation of flesh-like material is usually avoided or relegated to an offline process due to its high computational cost. However, simulations create a range of very desirable effects, like squash-and-stretch and contact deformations. The latter is especially important as it can guarantee pinch-free geometry for subsequent simulations like cloth and hair. 
+		\subsubsection{Kinematic methods}
+		
+Skeleton driven skin deformation was first introduced by \cite{Magnenat-Thalmann89}. Since then such techniques have been used extensively, especially the ``linear blend skinning'' technique (aka.\ ``skeleton subspace deformation'' (SSD) or ``enveloping''). However, the limitations of such techniques are well-known and have been the topic of numerous papers \cite{Wang02,Merry06,Kavan08}. Despite improvements, skinning remains, for the most part purely kinematic. It has proven very difficult to get more accurate, physically based deformations (e.g., from self-collisions and contact with other objects). Rather, such phenomena are typically created through a variety of example based approaches \cite{Lewis00,Sloan01}. Although very fast computationally, example based methods often require extreme amounts of user input, especially for contact and collision.
+		\subsubsection{Physically based simulation}		
+Simulation recently enabled significant advances to character realism in \cite{Irving:2008:SDF} and \cite{clutterbuck:2010:avatar}, albeit with the luxury of extreme computation time. Nevertheless these approaches demonstrated the promise of simulation. Many techniques reduce the accuracy of the elasticity model to help improve performance and interactivity. \cite{Waters90,Chadwick89} first demonstrated the effectiveness of comparatively simple mass/spring based approaches. \cite{Sueda:2008} add interesting anatomic detail using the tendons and bones in the hand, but use simple surface-based skin. \cite{Kry02} use principle component analysis of off-line elasticity simulation to provide interactive physically based SSD. \cite{capell:2005:pb,Capell:2002:ISD:566570.566622,Galopo07} used a skeleton based local rotational model of simple linear elasticity. \cite{Muller:2005:MDB} introduced shape matching, a technique that uses quadratic modal elements defined per lattice cell, allowing realtime albeit less accurate deformations. \cite{Rivers:2007:FFL} extended the accuracy of this
+method while maintaining high performance with a fast SVD. Warped stiffness approaches \cite{Muller:2002:SRD,Muller:2004:IVM} are a more general example of the techniques developed by Cappel et al.\ and use an inexact force differential to yield easily solvable symmetric positive definite (SPD) linearizations. However, \cite{Chao:2010:SGM} recently demonstrated the importance of a more accurate approximation to rotational force differentials lacking in warped stiffness approaches. We  illustrate this important robustness limitation of the warped stiffness approximation in figure~\ref{fig:warpedstiff}. The instability of the method effectively precludes its use in skinning applications. Unfortunately, the more accurate linearizations  yield indefinite systems and thus require more expensive linear algebra techniques (e.g., GMRES). However we demonstrate a solution procedure in the present work that rivals the efficiency available to warped stiffness, but without the robustness difficulties.
+
