@@ -443,8 +443,8 @@ advection step to store the pre-projection velocities.
 % \vspace*{-.05in}
 \section{Examples}
 % \vspace*{-.05in}
-We demonstrate the efficacy of our solver with high resolution smoke and free surface simulations. We use simple semi-Lagrangian advection \cite{S99} for the density and level
-sets. Velocity extrapolation for air velocities was done as in \cite{ZB05} and fast sweeping \cite{Z04} was used for level set reinitialization. Semi-Lagrangian advection 
+We demonstrate the efficacy of our solver with high resolution smoke and free surface simulations. We use simple semi-Lagrangian advection \cite{Stam:1999:SF} for the density and level
+sets. Velocity extrapolation for air velocities was done as in \cite{zhu:2005:sand} and fast sweeping \cite{Z04} was used for level set reinitialization. Semi-Lagrangian advection 
 is plagued by substantial numerical viscosity at lower resolutions; however, the efficiency and lightweight nature of our voxelized Poisson solver allows for sufficiently high resolution
 to produce detailed incompressible flows with these comparably simple methods. Figure \ref{fig_smoke_and_fire} demonstrates the effect of the available resolution.  We found a tolerance of $\|r\|_{\infty}<10^{-3}$ for smoke simulations and and $10^{-5}$ for free surface produced visually pleasing results.
 %% The smoke simulations
