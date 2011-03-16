@@ -1,4 +1,4 @@
-\chapter{A multigrid preconditioned conjugate gradients algorithm for large voxelized Poisson problems}
+\chapter{A multigrid preconditioned conjugate gradients algorithm for large voxelized Poisson problems}\label{chap:poisson}
 \begin{figure*}[ht]
 \center{
  \includegraphics[width=.32\textwidth]{poisson/figures/smoke_768_closeup_00144.png}
@@ -18,7 +18,7 @@
 %divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
 %fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
 %in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
-%popularized in computer graphics by \cite{FM96} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
+%popularized in computer graphics by \cite{Foster:1996:RAO} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
 %gradient (ICPCG) was more efficient. This has since become a very widely adopted approach for voxelized Poisson and has been used for smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as continuum models for solids such as sand \cite{ZB05} and hair \cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
 %\cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,ZB05}. There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a variational approach that retains the same sparsity of discretization while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
 %
@@ -144,7 +144,7 @@ $\mathcal{N}_{ijk}$ that excludes any Neumann neighbor cells, and $h$ is the gri
 standard 7-point Poisson finite difference stencil using the zero-Neumann boundary condition $(p_{i'\!j'\!k'}\!-\!p_{ijk})/h\!=\!0$ to eliminate pressure values at Neumann cells from the
 discrete equations.  
 %In the case of inhomogeneous Neumann boundary conditions $(p_{i'\!j'\!k'}\!-\!p_{ijk})/h\!=\!\beta(\vec{x})$, this value is transferred to the right hand side. 
-Away from the boundary of $\Omega$ this yields the standard 7-point stencil. Note that this formulation is identical to \cite{FM96,FF01}.
+Away from the boundary of $\Omega$ this yields the standard 7-point stencil. Note that this formulation is identical to \cite{Foster:1996:RAO,FF01}.
 %% Equation (\ref{eqn_discrete_poisson}) can be written collectively for the
 %% entire domain as $\mathcal{L}\vec{p}=\vec{f}$ or $\mathcal{L}^I\vec{p}^I+\mathcal{L}^D\vec{p}^D=\vec{f}$, where $\vec{p}^I$, $\vec{p}^D$ are the pressure variables on interior and
 %% Dirichlet cells respectively. Since $\vec{p}^D$ is given via the Dirichlet conditions, our problem reduces to the symmetric negative definite system
