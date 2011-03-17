@@ -55,34 +55,35 @@ unprecedented number of hairs to be simulated.  Finally, in
 Chapter~\ref{chap:elasticity}, we will introduce a new parallel multigrid
 solver for corotational linear elasticity on voxelized domains, and we
 will apply the solver to the problem of skeleton-driven,
-collision-aware character skinning.  
-
-\section{Incompressible flows in computer animation}
-Incompressible flows have proven very effective at generating many
-compelling effects in computer graphics including free surface,
-multiphase and viscoelastic fluids, smoke and fire.  
-	\subsection{Enforcing incompressibility via projection methods}
+collision-aware character skinning.  Much of the work presented here
+has been previously published in papers for which I am the primary
+author, namely \cite{mcadams:2009:hair,mcadams:2010:mgpcg}.
+%% \section{Incompressible flows in computer animation}
+%% Incompressible flows have proven very effective at generating many
+%% compelling effects in computer graphics including free surface,
+%% multiphase and viscoelastic fluids, smoke and fire.  
+%% 	\subsection{Enforcing incompressibility via projection methods}
 	
-	\subsection{Numerical discretizations}
-	One of the most popular techniques for enforcing the
-        incompressibility constraint is MAC grid based projection as
-        pioneered by \cite{HW65}. They showed that for simulations on
-        a regular
-Cartesian lattice, staggering velocity components on cell faces and pressures at cell centers gives rise to a natural means for projecting such a staggered velocity field to a discretely
-divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
-fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
-in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
-popularized in computer graphics by \cite{Foster:1996:RAO} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
-gradient (ICPCG) was more efficient. This has since become a very
-widely adopted approach for voxelized Poisson and has been used for
-smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as
-continuum models for solids such as sand \cite{zhu:2005:sand} and hair
-\cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
-\cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,zhu:2005:sand}. 
+%% 	\subsection{Numerical discretizations}
+%% 	One of the most popular techniques for enforcing the
+%%         incompressibility constraint is MAC grid based projection as
+%%         pioneered by \cite{HW65}. They showed that for simulations on
+%%         a regular
+%% Cartesian lattice, staggering velocity components on cell faces and pressures at cell centers gives rise to a natural means for projecting such a staggered velocity field to a discretely
+%% divergence free counterpart. This projection is ultimately accomplished by solving a Poisson equation for the cell centered pressures. Categorization of the Cartesian domain into air,
+%% fluid or solid cells gives rise to what \cite{BBB07} describe as the ``voxelized Poisson equation'' with unknown pressures and equations at each fluid cell, Dirichlet boundary conditions
+%% in each air cell and Neumann boundary conditions at faces separating fluid and solid cells. This technique for enforcing incompressibility via voxelized Poisson was originally
+%% popularized in computer graphics by \cite{Foster:1996:RAO} who used Successive Over Relaxation (SOR) to solve the system. \cite{FF01} later showed that incomplete Cholesky preconditioned conjugate
+%% gradient (ICPCG) was more efficient. This has since become a very
+%% widely adopted approach for voxelized Poisson and has been used for
+%% smoke \cite{SRF05,MTPS04,FSJ01} and fire \cite{HG09} as well as
+%% continuum models for solids such as sand \cite{zhu:2005:sand} and hair
+%% \cite{MSWST09}. The voxelized pressure Poisson equation is also popular in free surface flows due to its efficiency and relative simplicity
+%% \cite{CMT04,FF01,GBO04,HK05,HLYK08,KC07,MTPS04,NNSM08,WMT05,zhu:2005:sand}. 
 
-There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a
-variational approach that retains the same sparsity of discretization
-while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
+%% There are alternatives to voxelized Poisson, e.g., \cite{BBB07} used a
+%% variational approach that retains the same sparsity of discretization
+%% while improving behavior on coarse grids for both smoke and free surface. Also, many non-MAC grid based approaches have been used to enforce incompressibility, typically for smoke rather than free surface simulations. For example, \cite{MCPTD09,KFCO06,FOK05,ETKSD07} use conforming tetrahedralizations to accurately enforce boundary conditions, \cite{LGF04} uses adaptive octree-based discretization, and \cite{CNF07} makes use of tetrahedralized volumes for free surface flow.
 
 \section{Solids simulation for character animation}
 	\subsection{Hair}
