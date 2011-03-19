@@ -1,15 +1,16 @@
 
-\chapter{Detail Preserving Continuum Simulation of Straight Hair}\label{chap:hair}
-%
-%Simulating hair on a virtual character remains one of the most
-%challenging aspects of computer graphics. As hair is an integral
-%part of creating many virtual characters, the problem is especially important.
-%Unfortunately, the massive number of hairs interacting and colliding
-%makes this task especially challenging. Many approximations for
-%simulating hair exist, but they typically fail to provide the amount of
-%detail that real hair exhibits. Several applications, such as feature
-%films, aim to capture the high degree of complexity caused by several 
-%thousand interacting hair strands.
+\chapter{Detail Preserving Continuum Simulation of Straight
+  Hair}\label{chap:hair}
+
+Simulating hair on a virtual character remains one of the most
+challenging aspects of computer graphics. As hair is an integral
+part of creating many virtual characters, the problem is especially important.
+Unfortunately, the massive number of hairs interacting and colliding
+makes this task especially challenging. Many approximations for
+simulating hair exist, but they typically fail to provide the amount of
+detail that real hair exhibits. Several applications, such as feature
+films, aim to capture the high degree of complexity caused by several 
+thousand interacting hair strands.
 
 
 Even though individual hair dynamics scale well to multiple hairs (as each hair
@@ -34,7 +35,7 @@ continuum.
   \centering
   \includegraphics[height=.48\linewidth]{hair/images/realhair_1024}
 \includegraphics[height=.48\linewidth]{hair/images/tubes-alone-cropped-116}
-  \caption{\label{fig:hold} (Left) Real hair exhibiting an intricate webbed
+  \caption[A comparison of real hair and our method's results]{\label{fig:hold} (Left) Real hair exhibiting an intricate webbed
 appearance resulting from complex collision and contact. (Right) Our method
 creating a similar effect by using a
     combination of Eulerian and Lagrangian collision techniques.}
@@ -51,105 +52,102 @@ than fully Lagrangian collision models because the volume does most of
 the work towards resolving collisions.  Thus, our method can capture the
 intricate details of many individual strands while efficiently
 maintaining the overall hair volume. 
-%
 
-%\vspace{-2pt}
-%\section{Related Work}
-%\vspace{-4pt}
-%
-%Hair modeling is an active area of research that can be divided into
-%the following categories: hair shape modeling, hair strand dynamics,
-%hair complexity management and interaction, hair shading and self-shadowing.
-%Static hair shape
-%modeling, such as
-%\cite{yu:2001:model-hairstyle,kim:2002:hair,choe:2005:statistical-wisp}, hair
-%shading and shadow
-%computation are beyond the scope of our paper, so we do not discuss them
-%further. A
-%more detailed discussion on these topics can be found in the recent
-%survey paper \cite{ward:2007:hairsurvey}.
 
-%\textbf{Strand Dynamics.} Many hair simulation techniques consider different geometric and constitutive models
-%for modeling individual hair strands or clumps of hair starting with
-%mass spring systems \cite{rosenblum:1991:hair} and projective dynamics
-%\cite{anjyo:1992:hair}.  Mass/spring simulated lattice deformers can
-%be added to model torsion
-%\cite{plante:2002:hair-complexity,selle:2008:hair}.
-%Rigid body chaining methods are also commonly used
-%\cite{brown:2004:real-time-knot,choe:2005:simulating-complex-hair,hadap:2006:orientedstrands}.
-%Techniques based on elastic rod theory have become popular
-%starting with \cite{pai:2002:strands} and continuing with
-%\cite{gregoire:2006:interactive-simulation-one-dimensional,bertails:2006:superhelices}.
-%\cite{spillmann:2007:corde} also uses elastic rod theory but
-%adaptively changes the number of points that define the hair curve.
-%Most recently, \cite{bergou:2008:elastic-rods} provides a novel
-%modeling of twist as deviation from a canonical frame as well as a
-%method to evolve this separately quasistatically. Work in strand
-%dynamics has been extensive, and our technique can be used with the
-%practitioner's model of choice, but for simplicity we use
-%the mass/spring model.
-%
-%\textbf{Hair Interaction and Complexity.}
-%The simplest (but most expensive) approach to hair complexity
-%management is simulating and rendering every hair
-%\cite{rosenblum:1991:hair,anjyo:1992:hair,selle:2008:hair}. While this
-%theoretically yields the most detail, it is the most intractable,
-%especially if self-collisions are considered.  Thus most practitioners
-%use a clumping or continuum level of detail scheme that trades
-%accuracy for computational tractability:
+\section{Related Work}
+
+Hair modeling is an active area of research that can be divided into
+the following categories: hair shape modeling, hair strand dynamics,
+hair complexity management and interaction, hair shading and self-shadowing.
+Static hair shape
+modeling, such as
+\cite{yu:2001:model-hairstyle,kim:2002:hair,choe:2005:statistical-wisp}, hair
+shading and shadow
+computation are beyond the scope of our paper, so we do not discuss them
+further. A
+more detailed discussion on these topics can be found in the recent
+survey paper \cite{ward:2007:hairsurvey}.
+
+\noindent\textbf{Strand Dynamics.} Many hair simulation techniques consider different geometric and constitutive models
+for modeling individual hair strands or clumps of hair starting with
+mass spring systems \cite{rosenblum:1991:hair} and projective dynamics
+\cite{anjyo:1992:hair}.  Mass/spring simulated lattice deformers can
+be added to model torsion
+\cite{plante:2002:hair-complexity,selle:2008:hair}.
+Rigid body chaining methods are also commonly used
+\cite{brown:2004:real-time-knot,choe:2005:simulating-complex-hair,hadap:2006:orientedstrands}.
+Techniques based on elastic rod theory have become popular
+starting with \cite{pai:2002:strands} and continuing with
+\cite{gregoire:2006:interactive-simulation-one-dimensional,bertails:2006:superhelices}.
+\cite{spillmann:2007:corde} also uses elastic rod theory but
+adaptively changes the number of points that define the hair curve.
+Most recently, \cite{bergou:2008:elastic-rods} provides a novel
+modeling of twist as deviation from a canonical frame as well as a
+method to evolve this separately quasistatically. Work in strand
+dynamics has been extensive, and our technique can be used with the
+practitioner's model of choice, but for simplicity we use
+the mass/spring model.
+
+\noindent\textbf{Hair Interaction and Complexity.}
+The simplest (but most expensive) approach to hair complexity
+management is simulating and rendering every hair
+\cite{rosenblum:1991:hair,anjyo:1992:hair,selle:2008:hair}. While this
+theoretically yields the most detail, it is the most intractable,
+especially if self-collisions are considered.  Thus most practitioners
+use a clumping or continuum level of detail scheme that trades
+accuracy for computational tractability:
 
 
 \begin{figure}[t!]
-  \centering \fbox{\includegraphics[height=.4\linewidth]{hair/images/viz/curves-15}} \fbox{\includegraphics[height=.4\linewidth]{hair/images/viz/velocities-15}}
-  \caption{\label{fig:viz} Our method models the hair both as curves
-    (left) and as a volumetric velocity field (right).}
+  \centering
+\includegraphics[width = .4\columnwidth]{hair/images/viz/together-15}
+  \caption[Hair as curves and continuum.]{\label{fig:viz} Our method models the hair both as curves
+    and as a volumetric velocity field.}
 \end{figure}
-%
-%\textbf{Continuum models.}  \cite{hadap:2001:continuum-hair} uses a Lagrangian
-%fluid (smoothed particle hydrodynamics) technique to model fluid forces on a
-%mass/spring system. While this efficiently handles bulk behavior, detailed hair
-%behavior is lost. In addition, since smoothed particle hydrodynamics (SPH) is
-%used, forcing fluid interaction through spring like forces, this approach is
-%effectively as numerically difficult as standard self-repulsion spring forces.
-%\cite{bando:2003:hair-loosely-connected-particles} also uses a continuum
-%approach while discarding particle connectivity for real-time
-%applications. Unfortunately, this results in visual artifacts in renderings
-%because of the lack of connectivity in addition to the continuum's loss of high
-%fidelity detail.  \cite{petrovic:2005:levelset-hair} presented a continuum
-%approach that rasterized hair to an Eulerian velocity field and level set with
-%the goal of reducing computational complexity, rather than improving on
-%fidelity. Dynamics on the grid was limited to repeated averaging (an
-%approximation of viscosity) to obtain friction effects. Unlike our method,
-%they did not consider the incompressibility or other fluid behaviors that could
-%be imparted on the velocity field. In addition, the goal of the work was to
-%model relatively simple hairstyles on stylized characters, so the detail lost by
-%using a coarse grid was acceptable for their application.
 
-%\textbf{Clumped models.}  There are many techniques that simulate hair
-%interactions through a sparse set of disjoint guides that collide with one
-%another
-%\cite{bertails:2006:superhelices,hadap:2006:orientedstrands,gupta:2006:real-time-hair,chang:2002:mutualinteractions}.
-%A greater set of rendered hair strands are then either interpolated between
-%these guides or clumped to the guide strands.
-%\cite{plante:2002:hair-complexity} used a lattice whose vertices were simulated
-%with a mass/spring model to define many more interpolated
-%hairs. \cite{choe:2005:simulating-complex-hair} synthesized additional hairs
-%from a sparse set of simulated guide hairs with a statistical
-%model. \cite{bertails:2006:superhelices} used a combination of interpolation and
-%clumping to generate rendered strands.  Many clumped techniques also use
-%adaptivity to merge or split groups of hair to reduce computation where and when
-%the required detail is low
-%\cite{bertails:2003:adaptive-wisp-tree,ward:2003:modeling-hair-lod,ward:2003:adaptive-grouping-hair}. The
-%use of sparse clumps often allows the use of cheap repulsion penalties as
-%opposed to geometric collisions because guides are expected to have
-%thickness, and in Section~\ref{sec:collisions} we will discuss how this breaks
-%down with thousands of guides.
+\noindent\textbf{Continuum models.}  \cite{hadap:2001:continuum-hair} uses a Lagrangian
+fluid (smoothed particle hydrodynamics) technique to model fluid forces on a
+mass/spring system. While this efficiently handles bulk behavior, detailed hair
+behavior is lost. In addition, since smoothed particle hydrodynamics (SPH) is
+used, forcing fluid interaction through spring like forces, this approach is
+effectively as numerically difficult as standard self-repulsion spring forces.
+\cite{bando:2003:hair-loosely-connected-particles} also uses a continuum
+approach while discarding particle connectivity for real-time
+applications. Unfortunately, this results in visual artifacts in renderings
+because of the lack of connectivity in addition to the continuum's loss of high
+fidelity detail.  \cite{petrovic:2005:levelset-hair} presented a continuum
+approach that rasterized hair to an Eulerian velocity field and level set with
+the goal of reducing computational complexity, rather than improving on
+fidelity. Dynamics on the grid was limited to repeated averaging (an
+approximation of viscosity) to obtain friction effects. Unlike our method,
+they did not consider the incompressibility or other fluid behaviors that could
+be imparted on the velocity field. In addition, the goal of the work was to
+model relatively simple hairstyles on stylized characters, so the detail lost by
+using a coarse grid was acceptable for their application.
+
+\noindent\textbf{Clumped models.}  There are many techniques that simulate hair
+interactions through a sparse set of disjoint guides that collide with one
+another
+\cite{bertails:2006:superhelices,hadap:2006:orientedstrands,gupta:2006:real-time-hair,chang:2002:mutualinteractions}.
+A greater set of rendered hair strands are then either interpolated between
+these guides or clumped to the guide strands.
+\cite{plante:2002:hair-complexity} used a lattice whose vertices were simulated
+with a mass/spring model to define many more interpolated
+hairs. \cite{choe:2005:simulating-complex-hair} synthesized additional hairs
+from a sparse set of simulated guide hairs with a statistical
+model. \cite{bertails:2006:superhelices} used a combination of interpolation and
+clumping to generate rendered strands.  Many clumped techniques also use
+adaptivity to merge or split groups of hair to reduce computation where and when
+the required detail is low
+\cite{bertails:2003:adaptive-wisp-tree,ward:2003:modeling-hair-lod,ward:2003:adaptive-grouping-hair}. The
+use of sparse clumps often allows the use of cheap repulsion penalties as
+opposed to geometric collisions because guides are expected to have
+thickness, and in Section~\ref{sec:collisions} we will discuss how this breaks
+down with thousands of guides.
 
 
 
-\vspace{-2pt}
 \section{Method Overview}
-\vspace{-4pt}
 
 Our approach combines a Lagrangian hair solver with an Eulerian fluid simulator
 (see Figure~\ref{fig:viz}).
@@ -186,16 +184,13 @@ velocities (Section~\ref{sec:volume}).
 \begin{figure}[t!]
   \centering
   \includegraphics[width=1\linewidth]{hair/figures/redraw_geometric}
-  \caption{\label{fig:outline} Outline of the Lagrangian (top) and Eulerian
+  \caption[Outline of hybrid hair collision algorithm.]{\label{fig:outline} Outline of the Lagrangian (top) and Eulerian
     (bottom) components of our method.} 
 \end{figure}
 
-\vspace{-2pt}
 \section{Solver}
 
-\vspace{-5pt}
 \subsection{Volume}
-\vspace{-5pt}
 \label{sec:volume}
 
 A volume method is an ideal way to handle self-interaction of many hairs because
@@ -267,7 +262,8 @@ and cell centers for density control and separation condition computation.
 \begin{figure}[t]
   \centering
 \includegraphics[width=.99\linewidth]{hair/images/density/density-figure}
-  \caption{\label{fig:density} A demonstration of volumetric density
+  \caption[A demonstration of volumetric density
+    control.]{\label{fig:density} A demonstration of volumetric density
     control. (Left) high density and low volume. (Middle) moderate density and
     moderate volume. (Right) low density and high volume.}
 \end{figure}
@@ -279,12 +275,15 @@ with a weight lower than a threshold is set as a Dirichlet $p=0$
 condition, and any face that is inside a kinematic collision body is
 given a zero Neumann boundary condition and the velocity on that face is set to
 the object velocity. A divergence source term is set to target density
-(see Section~\ref{sec:density}). We solve the system with
-preconditioned conjugate gradient and then compute the divergence free
+(see Section~\ref{sec:density}). We solve the system with an
+Incomplete Cholesky preconditioned conjugate gradients algorithm and then compute the divergence free
 velocity field $v^{n+1}_\textrm{grid}=v_\textrm{grid}^{\star
   n+1}-\nabla p$. Additional viscosity could also be added at this stage to
 create additional friction (variable viscosity is also a
-possibility, see \cite{Carlson:2002:MAF,rasmussen:2004:t3}).
+possibility, see \cite{Carlson:2002:MAF,rasmussen:2004:t3}).  This
+voxelized Poisson solve is an obvious candidate for the method
+described in Chapter~\ref{chap:poisson}, and this method was a motivator
+for that work.
 
 Finally, in step 3c, FLIP is used to apply this velocity back to the $i$th
 particle using the formula
@@ -295,10 +294,8 @@ interpolation at location $x$ of a vector field $v$ and $\xi$
 controls the amount of FLIP vs. PIC.  In our simulations, we typically
 used a value of $\xi=.95$.
 
-\vspace{-5pt}
 \subsubsection{Density Control}
 \label{sec:density}
-\vspace{-5pt}
 
 The rasterized cell weights are used to define a density which can be targeted
 to a user defined density as in \cite{losasso:2007:sph} by using a divergence
@@ -311,14 +308,12 @@ penalty repulsion in Lagrangian dynamics, but handling it in the Poisson
 equation means it will be made consistent globally.  The results of density
 control can be seen in Figure~\ref{fig:density}.
 
-\vspace{-5pt}
 \subsubsection{Separation Control}
-\vspace{-5pt}
 
 \begin{figure}[t]
   \centering
 \includegraphics[width=.99\linewidth]{hair/images/separation/separation-figure}
-  \caption{\label{fig:separation} A volumetric separation constraint can be
+  \caption[A demonstration of separation control.]{\label{fig:separation} A volumetric separation constraint can be
     defined to control the amount of sticking. (Left) no separation condition is
   applied. (Right) an easy to satisfy separation condition is specified to
   produce immediate decoupling.}
@@ -331,7 +326,7 @@ control can be seen in Figure~\ref{fig:density}.
   \includegraphics[height=.288\linewidth]{hair/images/character/hair-10}
   \includegraphics[height=.288\linewidth]{hair/images/character/hair-12}
   \includegraphics[height=.288\linewidth]{hair/images/character/hair-close-7}
-  \caption{\label{fig:char} A hand-animated character walking with a hairstyle
+  \caption[Hair simulated on a hand-animated character.]{\label{fig:char} A hand-animated character walking with a hairstyle
     simulated by our method. The rightmost image is a closeup. Images \copyright
   Disney. All Rights Reserved.}
 \end{figure*}
@@ -362,20 +357,15 @@ for FLIP is not defined so these particles are not changed during the FLIP updat
 their collisions are resolved by Lagrangian self-collisions. See
 Figure~\ref{fig:separation} right for results of this approach.
 
-\vspace{-5pt}
 \subsection{Lagrangian Collisions}
 \label{sec:collisions}
-\vspace{-5pt}
 
 \begin{figure}[b!]
-\vspace{-9pt}
   \centering
   \includegraphics[width=.99\linewidth]{hair/figures/stacking}
-  \caption{\label{fig:stacking} Collisions under stacking. A
+  \caption[Collisions under stacking.]{\label{fig:stacking} Collisions under stacking. A
     comparison of geometric collisions with (right) and without (left)
     volumetric preconditioning.}
-
-%(left) Velocities from elastic and body forces. (middle) Without a volumetric response, many geometric collision iterations produce visual artifacts. (right) Geometric collisions preconditioned with a volumetric response cleanly resolve all collisions.} 
 \end{figure}
 
 
@@ -426,46 +416,51 @@ than proximity-based repulsions, because our volume formulation considers
 velocities as well as positions. We illustrate the effectiveness of a
 volumetric response to stacking collisions in Figure~\ref{fig:stacking}. 
 
-\vspace{-2pt}
 \section{Results}
-\vspace{-4pt}
 
-\begin{figure*}[htb]
-\textsf{
-%  \centering
-%%  \includegraphics[width=.99\linewidth]{hair/images/tubes/tubes_1_row}\\
-\begin{tabular}[t]{p{.20\linewidth}|p{.22\linewidth}p{.22\linewidth}p{.22\linewidth}}
- & \hspace{5pt}\textbf{Our Hybrid Method}& \hspace{5pt}\textbf{Lagrangian Collisions}& \hspace{5pt}\textbf{Eulerian
-    Collisions} \\
-%{\huge\textbf{Method \hbox{Comparison} and Timing}} 
-\begin{minipage}{\linewidth}
-Both Lagrangian collisions
-  and our method successfully stop the falling bundle while the Eulerian collisions
-  do not.
-\end{minipage}
- & 
-     \multicolumn{3}{l}{
-\begin{minipage}{\linewidth}
-\vspace{3pt}\includegraphics[width=.75\linewidth]{hair/images/tubes/tubes_2_row}
-\vspace{3pt}   \end{minipage}}\\
-\begin{minipage}{\linewidth}
-Our method exhibits a more natural coupling which
-  still exhibits high fidelity detail.
-\end{minipage}
- &\multicolumn{3}{l}{\vspace{3pt}\begin{minipage}{\linewidth}\includegraphics[width=.75\linewidth]{hair/images/tubes/tubes_3_row}\vspace{3pt}\end{minipage}}\\
-%\hline
-\hfill\textbf{Geometric collisions time} &\hspace{5pt}1.14 min/frame &\hspace{5pt}9.34 min/frame &\hspace{5pt}N/A \\
-\hfill\textbf{Volume substep time} &\hspace{5pt}3.65 min/frame &\hspace{5pt}N/A & \hspace{5pt}3.55 min/frame \\
-\hfill\textbf{Total time} & \hspace{5pt}7.97 min/frame &\hspace{5pt}13.63 min/frame &\hspace{5pt}5.67 min/frame \\
-\end{tabular}
-}
-%
-%%\begin{tabularOur Method&Lagrangian Collisions&Eulerian Collisions\end{tabular}
-%%\hspace{70pt}\textbf{Our Method} \hfill \textbf{Lagrangian Collisions} \hfill \textbf{Eulerian Collisions}\hspace{70pt}
-%%  \includegraphics[width=.99\linewidth]{hair/images/tubes/tubes_4_row}
-  \caption{\label{fig:tubes} A cylindrical bundle of hairs is dropped on another
-  bundle of suspended hairs with a timing table (2400 hairs). }
-\end{figure*}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.99\linewidth]{hair/images/tubes/tubes_2_row}
+\includegraphics[width=.99\linewidth]{hair/images/tubes/tubes_3_row}
+\caption[A result comparison of collision algorithms.]{\label{fig:tubes} A cylindrical bundle of hairs is dropped on another
+  bundle of suspended hairs with a timing table (2400 hairs). Left:
+  Our method. Middle: Lagrangian collisions only. Right: Eulerian
+  collisions only.}
+\end{figure}
+
+
+%% \begin{figure*}[htb]
+%% \textsf{
+%% %  \centering
+%% %%  \includegraphics[width=.99\linewidth]{hair/images/tubes/tubes_1_row}\\
+%% \begin{tabular}[t]{p{.20\linewidth}|p{.22\linewidth}p{.22\linewidth}p{.22\linewidth}}
+%%  & \hspace{5pt}\textbf{Our Hybrid Method}& \hspace{5pt}\textbf{Lagrangian Collisions}& \hspace{5pt}\textbf{Eulerian
+%%     Collisions} \\
+%% %{\huge\textbf{Method \hbox{Comparison} and Timing}} 
+%% \begin{minipage}{\linewidth}
+%% Both Lagrangian collisions
+%%   and our method successfully stop the falling bundle while the Eulerian collisions
+%%   do not.
+%% \end{minipage}
+%%  & 
+%%      \multicolumn{3}{l}{
+%% \begin{minipage}{\linewidth}
+%% \vspace{3pt}\includegraphics[width=.75\linewidth]{hair/images/tubes/tubes_2_row}
+%% \vspace{3pt}   \end{minipage}}\\
+%% \begin{minipage}{\linewidth}
+%% Our method exhibits a more natural coupling which
+%%   still exhibits high fidelity detail.
+%% \end{minipage}
+%%  &\multicolumn{3}{l}{\vspace{3pt}\begin{minipage}{\linewidth}\includegraphics[width=.75\linewidth]{hair/images/tubes/tubes_3_row}\vspace{3pt}\end{minipage}}\\
+%% %\hline
+%% \hfill\textbf{Geometric collisions time} &\hspace{5pt}1.14 min/frame &\hspace{5pt}9.34 min/frame &\hspace{5pt}N/A \\
+%% \hfill\textbf{Volume substep time} &\hspace{5pt}3.65 min/frame &\hspace{5pt}N/A & \hspace{5pt}3.55 min/frame \\
+%% \hfill\textbf{Total time} & \hspace{5pt}7.97 min/frame &\hspace{5pt}13.63 min/frame &\hspace{5pt}5.67 min/frame \\
+%% \end{tabular}
+%% }
+%%   \caption{\label{fig:tubes} A cylindrical bundle of hairs is dropped on another
+%%   bundle of suspended hairs with a timing table (2400 hairs). }
+%% \end{figure*}
 
 We have demonstrated our technique with a range of examples in our prototype
 system; one can easily implement it with a standard Lagrangian hair simulator
@@ -482,7 +477,7 @@ dynamically updated as the volume of hair changes shape.
 
 We also demonstrate complex contact and collision
 using a braid pattern consisting of 1500 hairs with approximately 100 particles
-each in Figure~9.
+each in Figure~\ref{fig:braid}.
 The three hair sections begin in a very loose configuration with the top particle of
 each hair fixed.  As gravity pulls the hairs downward, a braid pattern emerges
 due to our Eulerian/Lagrangian collisions.
@@ -503,7 +498,7 @@ method computes both volumetric and Lagrangian collisions, it is still
 significantly faster (8m) per frame than
 Lagrangian collisions alone (13.6m), showing the effectiveness of the Eulerian
 divergence-free solve as a collision preconditioner.  A further breakdown of
-timing can be found in Figure~\ref{fig:tubes}, and we note that the remainder
+timing can be found in Table~\ref{table:tubes}, and we note that the remainder
 of time is spent on time integration.
 
 
@@ -518,28 +513,19 @@ allowing us to relax the time step restriction.
 %tests, the average time step was between $7 \times 10^{-4}$ and $1.5
 %\times%10^{-3}$ 
 
-%\begin{table}[b!]
-%  \centering \includegraphics[width=.9\linewidth]{hair/figures/tube_times}
-%  \caption{\label{table:tubes} A comparison of runtimes for purely Lagrangian,
-%    purely Eulerian, and our hybrid technique on 2400 hairs. (See Fig~\ref{fig:tubes})} 
-%\vspace{-5pt}
-%\end{table}
+\begin{table}[b!]
+ \centering \includegraphics[width=.9\linewidth]{hair/figures/tube_times}
+ \caption[Runtime comparison of collision algorithms.]{\label{table:tubes} A comparison of runtimes for purely Lagrangian,
+   purely Eulerian, and our hybrid technique on 2400 hairs. (See Fig~\ref{fig:tubes})} 
+\end{table}
 
 \section{Discussion}
-\vspace{-4pt}
 
-\newcommand{\figurewidth}{1.8in}
-\cutout{r} \shapepar[\figurewidth]{{0}
-{0}b{-.8}\\
-{.5}t{-1}{1}\\
-{1}t{-1}{1}\\
-{1.7}e{-.5}}
-\begin{picture}(0,0)
-\put
-(-20,-210){\includegraphics[width=\figurewidth]{hair/images/braidfigurenew}}
- \put(50,-220){\textbf{Figure
-  9}}
-\end{picture}
+\begin{figure}[t]
+\centering
+\includegraphics[width=.45\columnwidth]{hair/images/braidfigurenew}
+\caption{A hair braid.}\label{fig:braid}
+\end{figure}
 
 While we believe our technique makes high-fidelity interactions tractable, there
 are some limitations.  We have not tried this method on non-straight hair as
@@ -551,7 +537,7 @@ coordinate response can be ambiguous. The FLIP impulse will be similarly
 difficult to apply. Thus, in future work we plan to experiment with the maximal
 coordinate mass-spring torsion model of \cite{selle:2008:hair}.
 We note, however, that the braid simulation (1500 hairs, 150 particles
-each) in Figure~9
+each) in Figure~\ref{fig:braid}
 shows both large and small scale interactions, showing promise for applications
 of our method.  
 
@@ -568,16 +554,14 @@ to allow different resolutions in different parts. For example, using the work o
 visible may not require a highly detailed velocity field.  Creating a level set
 by applying a fast marching method to the previous timestep's density volume
 could derive a refinement criterion. Parallelization of the grid rasterization,
-Poisson solve, and FLIP application would also allow higher resolutions. We
-expect these algorithms to map well to multicore architectures and graphics hardware. 
+Poisson solve (notably the algorithm in Chapter~\ref{chap:poisson}), and FLIP application would also allow higher
+resolutions.  We expect these algorithms to map well to multicore architectures and graphics hardware. 
 We are also interested in applying this technique to cloth as a
 replacement to the Bridson repulsions to better precondition the cloth
 collisions.
 
 
-\vspace{-2pt}
 \section{Conclusion}
-\vspace{-4pt}
 
 We have presented a technique that hybridizes Lagrangian and Eulerian hair
 simulation techniques. Inspired by recent FLIP and SPH fluid technology, we show

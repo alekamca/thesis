@@ -1,16 +1,5 @@
 \chapter{A multigrid preconditioned conjugate gradients algorithm for large voxelized Poisson problems}\label{chap:poisson}
-%% \begin{figure*}[ht]
-%% \center{
-%%  \includegraphics[width=.32\textwidth]{poisson/figures/smoke_768_closeup_00144.png}
-%%  \includegraphics[width=.32\textwidth]{poisson/figures/smoke_car_768_00223.png}
-%%  \includegraphics[width=.32\textwidth]{poisson/figures/dragon_deep_pool_00084.png}
-%% }
-%%  \caption{Left: Simulation of smoke flow past a sphere, at $768^2\!\times\!1152$ resolution (close-up view). Middle: A column of smoke is stirred up by a revolving object -- $768^3$ resolution. Right: Free
-%%    surface simulation of water poured on a dragon figurine at $512^3$ resolution.}
-%% \end{figure*}
 
-
-\section{Introduction}
 Incompressible flows have proven very effective at generating many
 compelling effects in computer graphics including free surface,
 multiphase and viscoelastic fluids, smoke and fire. One of the most
@@ -56,10 +45,11 @@ Although ICPCG certainly offers an acceleration over unpreconditioned CG, it is 
 is very high for large domains.  Furthermore, since ICPCG involves sparse back-substitution, it cannot be parallelized without further modification \cite{Hughes:2007:physicalsimulation}.
 Whereas multigrid methods have the potential for constant asymptotic convergence rates, our purely geometric multigrid preconditioned conjugate gradient algorithm is the \emph{first} in the graphics literature to demonstrate these convergence rates on the highly irregular voxelized domains common to free surface simulation.
 
-\section*{Our main contributions}
-\vspace*{-4pt}
+In this chapter, we present a multigrid preconditioned conjugate
+gradients algorithm for voxelized Poisson with a number of features.
+We highlight a few here.
 
-\noindent$\bullet$  We solve for the true solution of the voxelized Poisson equation at full resolution.  A number of recent works have focused on alternative simplified approximations to enforce incompressibility, citing the bottleneck of solving the Poisson equation at high resolutions \cite{HG09}.   Our method allows us to efficiently solve for incompressibility via pressure projection on large grids, effectively eliminating the bottleneck, and we demonstrate the effectiveness of our technique when applied to high resolution fluid simulations.  
+We solve for the true solution of the voxelized Poisson equation at full resolution.  A number of recent works have focused on alternative simplified approximations to enforce incompressibility, citing the bottleneck of solving the Poisson equation at high resolutions \cite{HG09}.   Our method allows us to efficiently solve for incompressibility via pressure projection on large grids, effectively eliminating the bottleneck, and we demonstrate the effectiveness of our technique when applied to high resolution fluid simulations.  
 
 We handle an \emph{arbitrary mix of Dirichlet and Neumann boundary conditions} on \emph{irregular voxelized domains} common to free surface flow simulations. Previous works proposing geometric multigrid methods for rectangular domains \cite{TO94,AF96,BWR05,BWK06,KH08}, as well as irregular Neumann boundaries (via a projection method) \cite{MCPN08}, cannot handle this general case.  
 
@@ -67,9 +57,7 @@ We use a \emph{purely geometric, matrix-free formulation} and \emph{maintain con
 
 In comparison to widely-used ICPCG solvers, our method \emph{requires less storage, is more convergent, and more parallelizable}.  Unlike ICPCG, no preconditioning matrices are explicitly stored.  This allows us to accommodate as many as $768^2\!\times\!1152$ voxels with less than $16$GB of memory. Whereas ICPCG requires sparse backsubstition and cannot be parallelized without significant modifications, this is not the case for our solver.  Finally, we demonstrate that our solver is significantly faster than ICPCG on moderately sized problems, and our convergence rates are independent of grid size, so this performance comparison improves with resolution.  As a result, we can solve (with residual reduction by a factor of $10^4$) at $128^3$ resolution in less than $0.75$ seconds and $768^3$ resolution in about a minute.
 
-% \vspace*{-.05in}
 \section{Related Work}
-% \vspace*{-.05in}
 
 Incomplete Cholesky preconditioned CG remains the state of the art for voxelized Poisson; however, at high resolutions, it becomes impractical due to the cost of recomputing the preconditioner as the domain changes and the increased number of PCG iterations needed to reduce the residual on large grids.  
 Although ICPCG certainly offers an acceleration over unpreconditioned CG, it is still impractical at high resolutions since the required number of iterations increases drastically with the size of the problem, and the cost of updating and explicitly storing the preconditioner (a principally non-parallel construction process) 
@@ -134,15 +122,12 @@ the right hand side.
 
 \begin{figure}[t]
 \center{\includegraphics[width=\columnwidth]{poisson/figures/domain_illustration.pdf}}
-\caption{Left: Example of the geometry for a Poisson problem. Right: Our voxelized representation of this computational domain.}
-%% \vspace*{-.15in}
+\caption[Example geometry and voxelized representation for a Poisson problem]{Left: Example of the geometry for a Poisson problem. Right: Our voxelized representation of this computational domain.}
 \label{fig_domain_illustration}
 \end{figure}
 
-%\vspace*{-.05in}
 \subsection{Discretization}
 \label{sec_discretization}
-%\vspace*{-.05in}
 We discretize the Poisson equation on a uniform Cartesian lattice, and store the unknown pressure variables $p_{ijk}$ at the cell centers of this lattice. In our approach, both the computational
 domain and boundary conditions are defined at the resolution of this background lattice. In particular, the computational domain is represented as a collection of grid cells
 (or voxels), which we refer to as \emph{interior cells} (colored gray in the example of Figure \ref{fig_domain_illustration}, right).
@@ -150,9 +135,9 @@ domain and boundary conditions are defined at the resolution of this background 
 %% commonly accepted practice in graphics, even more so at the very high resolutions we can accommodate; other options are discussed in Section \ref{sec_discussion}.
 We express boundary conditions in a volumetric, voxel-based fashion. Specifically, we define Dirichlet conditions on a voxelized volumetric region, instead of imposing them strictly
 along $\partial\Omega$. We label the cells in this region as \emph{Dirichlet cells} (colored red in Figure \ref{fig_domain_illustration}, right).
-%% It is typically straightforward to define a volumetric extent for this Dirichlet region, e.g. for a free-surface water simulation the entire air region would be labeled as Dirichlet. Since only the values of Dirichlet
-%% cells immediately adjacent to the interior region will influence our computed solution, those are the only values that need to be provided, i.e. no extrapolation of the Dirichlet
-%% condition is necessary.
+It is typically straightforward to define a volumetric extent for this Dirichlet region, e.g. for a free-surface water simulation the entire air region would be labeled as Dirichlet. Since only the values of Dirichlet
+cells immediately adjacent to the interior region will influence our computed solution, those are the only values that need to be provided, i.e. no extrapolation of the Dirichlet
+condition is necessary.
 We similarly define regions of \emph{Neumann cells} (shown in blue in Figure \ref{fig_domain_illustration}) by rasterizing solid objects and container walls onto
 the grid. Since pressures are cell-centered, Neumann conditions are naturally imposed at the cell faces between interior and Neumann cells. For simplicity of implementation, as
 detailed in Section \ref{sec_implementation}, we always assume a ``ghost'' layer of Neumann cells surrounding our computational domain, as illustrated in Figure
@@ -181,7 +166,7 @@ Away from the boundary of $\Omega$ this yields the standard 7-point stencil. Not
 
 \begin{figure}[t]
 \center{\hspace*{-.025\columnwidth}\includegraphics[width=1.05\columnwidth]{poisson/figures/refinement_illustration.pdf}}
-\caption{Illustration of our coarsening strategy. Note the geometric and topological discrepancy between different resolution levels.}
+\caption[Illustration of coarsening strategy.]{Illustration of our coarsening strategy. Note the geometric and topological discrepancy between different resolution levels.}
 \label{fig_refinement_illustration}
 \end{figure}
 
@@ -193,7 +178,7 @@ problem at $L$$+$$1$ levels of resolution, denoted $\mathcal{L}^{(0)},\mathcal{L
 coarsest. We also define a smoother at every level of the hierarchy and restriction/prolongation operators for transferring data across resolutions.
 
 \begin{algorithm}[h]
-\caption{V-Cycle of the Multigrid Correction Scheme.
+\caption[V-Cycle of the Multigrid Correction Scheme.]{V-Cycle of the Multigrid Correction Scheme.
 \textit{Setting the initial guess to zero (line 2) is only necessary when the V-Cycle is used as a preconditioner. When the
   V-Cycle is used as an iterative solver line 2 should be omitted.}}
 \label{alg_vcycle}
@@ -247,12 +232,10 @@ domain. Our complete smoothing procedure will start with $M$ Gauss-Seidel sweeps
 with another $N$ Gauss-Seidel boundary sweeps. Finally, we can approximate the exact solution for the coarsest level in the hierarchy by simply iterating the smoothing procedure a large
 number of times.
 
-%% \vspace*{-.1in}
 \begin{figure}[t]
 \center{\hspace*{-.025\columnwidth}\includegraphics[width=1.05\columnwidth]{poisson/figures/transfer_stencils2.pdf}}
-\caption{Left: 2D illustration of the restriction operator. Right: Illustration of the boundary region. A band width of 2 is pictured.}
+\caption[2D restriction operator and boundary region]{Left: 2D illustration of the restriction operator. Right: Illustration of the boundary region. A band width of 2 is pictured.}
 \label{fig_transfer_stencils}
-%% \vspace*{-.2in}
 \end{figure}
 
 \begin{algorithm}[h]
@@ -271,8 +254,6 @@ number of times.
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-
 
 
 The multigrid scheme we just described is particularly simplistic, using an elementary coarsening strategy, a very basic smoother and without specialized transfer operators near the
@@ -309,39 +290,22 @@ verify that under these conditions, the action of the V-Cycle indeed corresponds
 less trivial. We refer to \cite{T93} for a detailed analysis of the conditions for symmetry and definiteness, and only present here a set of sufficient conditions instead. The V-Cycle of
 Algorithm~\ref{alg_vcycle} will produce a symmetric and definite preconditioner if:
 
-%% \vspace*{-.03in}
 \noindent$\bullet$ The restriction/prolongation operators are the transpose of one another (up to scaling). This is common practice, and also the case for the V-Cycle we described.
 
-%% \vspace*{-.03in}
 \noindent$\bullet$ The smoother used in the \emph{upstroke} of the V-Cycle (Algorithm~\ref{alg_vcycle}, line 11) performs the operations of the smoother used for the \emph{downstroke} (line 4) in reverse
   order. E.g., if Gauss-Seidel iteration is used, opposite traversal orders should be used when descending or ascending the V-Cycle, respectively. For Jacobi smoothers, no
   reversal is necessary as the result is independent of the traversal order.
 
-%% \vspace*{-.03in}
 \noindent$\bullet$ The solve at the coarsest level (Algorithm~\ref{alg_vcycle}, line 8) needs to either be exact, or the inverse of $\mathcal{L}^{(L)}$ should be approximated with a symmetric and
   definite matrix. If the smoother is iterated to approximate the solution, a number of iterations should be performed with a given traversal order, followed by an equal number of
   iterations with the order reversed.
 
-%% \begin{itemize}
-%% \item The restriction/prolongation operators are the transpose of one another (up to scaling). This is common practice, and also the case for the V-Cycle we described, although it is not
-%%   a prerequisite for multigrid methods, in general (e.g. \cite{brandt:1977:multilevel} uses non-adjoint transfer operators for the Poisson equation).
-%% \item The smoother used in the \emph{upstroke} if the V-Cycle (Algorithm~\ref{alg_vcycle}, line 11) performs the operations of the smoother used for the \emph{downstroke} (line 4) in reverse
-%%   order. For example, if Gauss-Seidel iteration is used, opposite traversal orders need to be used when descending or ascending the V-Cycle, respectively. For Jacobi smoothers, no
-%%   reversal is necessary since the result is independent of the traversal order.
-%% \item The solve at the coarsest level (Algorithm~\ref{alg_vcycle}, line 8) needs to either be exact, or the inverse of $\mathcal{L}^{(L)}$ should be approximated with a symmetric and
-%%   definite matrix. If the smoother is iterated to approximate the solution, a number of iterations should be performed with a given traversal order, followed by an equal number of
-%%   iterations with the order reversed.
-%% \end{itemize}
-
-%% \vspace*{-.1in}
 
 \begin{algorithm}[h]
-\caption{Multigrid-preconditioned conjugate gradient.
-%%  \newline \it
+\caption[Multigrid-preconditioned conjugate gradient.]{Multigrid-preconditioned conjugate gradient.
  \textit{Red-colored steps in the algorithm are applicable when the Poisson problem has a nullspace (i.e., all
   Neumann boundary conditions), and should be omitted when Dirichlet boundaries are present.}
   \newline $(\dag)$ $\vec{u}\gets\mathcal{M}^{-1}\vec{b}$ is implemented by calling {
-%%\sc
  V-Cycle}$(\vec{u},\vec{b})$}
 \label{alg_mgpcg}
 \begin{algorithmic}[1]
@@ -370,13 +334,11 @@ Finally, Poisson problems with all-Neumann boundary conditions (e.g., simulation
 constant. The algorithm of Algorithm~\ref{alg_mgpcg} is modified in this case to project out this nullspace, and the modifications are highlighted in red in the pseudocode. No modification
 to the V-Cycle preconditioner is needed.
 
-% \vspace*{-.05in}
 \section{Implementation and Optimizations}
- %\vspace*{-.05in}
 \label{sec_implementation}
 
-%% The simplicity of the V-Cycle enabled extensive optimizations and software tuning for parallel execution on shared memory
-%% computers. These implementation strategies are detailed below.
+The simplicity of the V-Cycle enabled extensive optimizations and software tuning for parallel execution on shared memory
+computers. These implementation strategies are detailed below.
 
 \textbf{Minimizing boundary cost:} The cost of performing 30-40 smoothing sweeps on the boundary to stabilize the V-Cycle as a solver cannot be neglected, even though the interior
 smoothing effort would asymptotically dominate. In practice, this amount of boundary smoothing would be the most costly operation of the V-Cycle for a $256^3$ grid or smaller, assuming serial
@@ -390,35 +352,32 @@ moderate acceleration over the unpreconditioned CG method. However, the followin
 %variables. 
 The extent of our boundary region depends on our prolongation operator as well as our standard 8-to-1 coarsening scheme. Define $D(\mathcal{P},I^{(l)})$ as the set of coarse cells in the prolongation stencil of an interior cell $I^{(l)}$.  For each $I^{(l+1)}\in D(\mathcal{P},I^{(l)})$, if any of its 8 fine children are not interior cells, $I^{(l)}$ is included in the boundary band.
 This heuristic produces a boundary region with a width up to 3 cells (near irregular interfaces) or as low as 1 cell (near walls and boundaries resolved by all grids).
-%% We found that including fewer cells than determined by this rule in the boundary band would decelerate PCG convergence, while including more tends to have diminishing returns (and
-%% necessitate more boundary iterations). 
+We found that including fewer cells than determined by this rule in the boundary band would decelerate PCG convergence, while including more tends to have diminishing returns (and
+necessitate more boundary iterations). 
 Additionally, we only perform boundary smoothing \emph{after} the interior sweep on the downstroke of the V-Cycle and \emph{before} the interior
 sweep on the upstroke. 
-%%As a result, the extra boundary smoothing always occurs between the inter-grid transfer and the interior smoothing sweep.
+As a result, the extra boundary smoothing always occurs between the inter-grid transfer and the interior smoothing sweep.
 We found that using 2 Gauss-Seidel
 iterations on the boundary band at the finest level struck the best balance of computational cost and PCG efficiency. 
-%% Naturally, the traversal order of the Gauss-Seidel sweep was
-%% reversed between the downstroke and upstroke of the V-Cycle, to ensure symmetry.
+Naturally, the traversal order of the Gauss-Seidel sweep was
+reversed between the downstroke and upstroke of the V-Cycle, to ensure symmetry.
 Since the size of the boundary band at every coarser level is reduced by a factor of four, we
 increase the number of boundary sweeps by a factor of 2 every level (i.e., performing $2^{l+1}$ sweeps at level $l$), which incurs only a minimal overhead but further accelerates convergence.
 
-%% \vspace*{-.05in}
 \noindent\textbf{Compact representation of $\mathcal{L}$:} The discrete operator $\mathcal{L}$ contains the standard 7-point stencil in the interior of the domain, with a
 coefficient of $-6/h^2$ on the center cell and $1/h^2$ on the 6 face neighbors. We can eliminate the $1/h^2$ factor by observing that the preconditioning ability of $\mathcal{M}^{-1}$
 remains unchanged if the entire matrix is scaled. Thus, if we consider the V-Cycle to be a solver for $h^2\Delta$ instead of the unscaled Poisson operator, the operator
 coefficients at the interior of the finest level simply become $-6$ and $1$. 
-%%Of course, this $h^2$-scaling will not eliminate the denominators for the coarser grids; however, 
-If we
+Of course, this $h^2$-scaling will not eliminate the denominators for the coarser grids; however, if we
 modify the prolongation operator as $\mathcal{P}^T\!=\!2\mathcal{B}\otimes\mathcal{B}\otimes\mathcal{B}$, then the integer-valued
 scaled-Poisson stencils (with entries $-6$ and $1$) can be used at all levels of the hierarchy. This stencil will only assume a different form near Neumann boundaries: the scaled
 7-point stencil will have a coefficient of 1 for any non-Neumann neighbors, a value of zero for Neumann neighbors, and the center coefficient will be the negative count of
 non-Neumann neighbors. Instead of storing these zero Neumann coefficients, we enforce the condition that any variables where the discrete operator $\mathcal{L}$ will be applied to,
 shall have zero values on any non-interior cells. As a consequence, we only need to store a negative integer (the center coefficient)  to represent the Poisson
 operator near the boundary. 
-%% In fact, we only store the central coefficient (and its inverse, needed in the smoothing routines) on flattened arrays with the size of the boundary
-%% band, instead of storing them throughout the entire domain.
+In fact, we only store the central coefficient (and its inverse, needed in the smoothing routines) on flattened arrays with the size of the boundary
+band, instead of storing them throughout the entire domain.
 
-%% \vspace*{-.05in}
 \noindent\textbf{Using zero initial guess and boundary conditions:} When the multigrid V-Cycle is used as a preconditioner, it is solving a Poisson problem with zero boundary conditions,
 and uses a zero initial guess as discussed in Section \ref{subsec_mgpcg}. Also, every subsequent level of the multigrid correction scheme will also employ zero initial guess and
 boundary conditions. This fact allows us to simplify and combine steps 2,4, and 5 of the algorithm in Algorithm~\ref{alg_vcycle}, which are the most costly components of the V-Cycle
@@ -431,15 +390,6 @@ Of course, this procedure will be invalid near Neumann boundaries, where $\mathc
 with non-standard stencils, setting those values to zero instead. These cells will be smoothed in the boundary sweep immediately afterwards. Lastly, the Gauss-Seidel boundary
 sweep will invalidate the residuals computed near the boundary band. We correct this by updating the residuals in the 1-ring of the boundary band at the end of the smoothing procedure.
 
-%\begin{figure}[t]
-%\center{\includegraphics[width=.495\columnwidth]{poisson/figures/smoke_192_closeup_00090.png} \includegraphics[width=.495\columnwidth]{poisson/figures/dragon_no_pool_closeup_00013.png}}\vspace*{.01in}
-%\center{\includegraphics[width=.495\columnwidth]{poisson/figures/smoke_384_closeup_00090.png} \includegraphics[width=.495\columnwidth]{poisson/figures/dragon_no_pool_closeup_00027.png}}\vspace*{.01in}
-%\center{\includegraphics[width=.495\columnwidth]{poisson/figures/smoke_768_closeup_00090.png} \includegraphics[width=.495\columnwidth]{poisson/figures/dragon_no_pool_closeup_00036.png}}
-%%% \vspace*{-.25in}
-%\caption{Left: Smoke plume simulation at resolutions of $192^2\times 288$ (top), $384^2\times 576$ (middle) and $768^2\times 1152$ (bottom). Right: Free surface water simulation on a $512^3$ grid.}
-%%% \vspace*{-.25in}
-%\label{fig_smoke_and_fire}
-%\end{figure}
 
 \noindent\textbf{Pipelining operations:} Streaming operations in the PCG algorithm  were often combined in a single pass through memory. The pseudocode in Algorithm~\ref{alg_mgpcg} has
 been written to indicate such combinable operations on the same line, e.g., lines 2, 4, 6, 8, 13, and 16.
@@ -469,26 +419,68 @@ used for $\vec{x},\vec{r},\vec{p},\vec{z}$ and $\boldsymbol{\delta}$) and an ent
 metadata, and the memory for all data variables can be reused outside of the solver. For example, we have reused $\vec{p},\vec{z}$ and $\boldsymbol{\delta}$ in the
 advection step to store the pre-projection velocities.
 
-% \vspace*{-.05in}
+
+\begin{figure}[t]
+\center{
+\includegraphics[width=.32\columnwidth]{poisson/figures/smoke_192_closeup_00090.png} 
+\includegraphics[width=.32\columnwidth]{poisson/figures/smoke_384_closeup_00090.png}
+\includegraphics[width=.32\columnwidth]{poisson/figures/smoke_768_closeup_00090.png}
+}
+\caption[Smoke plume simulation at various resolutions]{Smoke plume simulation at resolutions of $192^2\times 288$ (left), $384^2\times 576$ (middle) and $768^2\times 1152$ (right).}
+\label{fig_smoke_sphere}
+\end{figure}
+
+
+\begin{figure}[t]
+\center{
+\includegraphics[width=.45\columnwidth]{poisson/figures/dragon_no_pool_closeup_00013.png}
+\includegraphics[width=.45\columnwidth]{poisson/figures/dragon_no_pool_closeup_00027.png}
+}
+\center{
+\includegraphics[width=.45\columnwidth]{poisson/figures/dragon_no_pool_closeup_00036.png}
+\includegraphics[width=.45\columnwidth]{poisson/figures/dragon_deep_pool_00084.png}
+}
+\caption{Free surface water simulation on a $512^3$ grid.}
+\label{fig_water}
+\end{figure}
+
+\begin{figure}[ht]
+\center{
+ \includegraphics[width=.45\textwidth]{poisson/figures/smoke_768_closeup_00144.png} 
+ \includegraphics[width=.45\textwidth]{poisson/figures/smoke_car_768_00223.png}
+}
+ \caption[High resolution smoke simulations]{Left: Simulation of smoke
+   flow past a sphere, at $768^2\!\times\!1152$ resolution (close-up
+   view). Right: A column of smoke is stirred up by a revolving object
+   -- $768^3$ resolution.}
+\label{fig_smoke}
+\end{figure}
+
+
 \section{Examples}
-% \vspace*{-.05in}
 We demonstrate the efficacy of our solver with high resolution smoke and free surface simulations. We use simple semi-Lagrangian advection \cite{Stam:1999:SF} for the density and level
 sets. Velocity extrapolation for air velocities was done as in \cite{zhu:2005:sand} and fast sweeping \cite{Z04} was used for level set reinitialization. Semi-Lagrangian advection 
 is plagued by substantial numerical viscosity at lower resolutions; however, the efficiency and lightweight nature of our voxelized Poisson solver allows for sufficiently high resolution
-to produce detailed incompressible flows with these comparably simple methods. Figure \ref{fig_smoke_and_fire} demonstrates the effect of the available resolution.  We found a tolerance of $\|r\|_{\infty}<10^{-3}$ for smoke simulations and and $10^{-5}$ for free surface produced visually pleasing results.
-%% The smoke simulations
-%% in the left column are done at top resolution of $768\times768\times1152$ and the free surface simulation at the right is done with $512^3$ resolution. 
-%Although we used resolutions substantially higher than typical, the bulk of the computation was in advection and level set reinitialization rather than the voxelized Poisson solves (see
-%Table~\ref{fig_runtimes}). 
+to produce detailed incompressible flows with these comparably simple
+methods. 
+
+Figure \ref{fig_smoke_sphere} demonstrates the effect of the resolution in a
+smoke simulation.  In Figure \ref{fig_smoke} we demonstrate our method
+both with fixed (left) and moving (right) Neumann boundary conditions.
+In Figure \ref{fig_water}, we show our method with high resolution
+Neumann boundary conditions as well as highly irregular Dirichlet
+boundary conditions at the water's surface.  We found a tolerance of
+$\|r\|_{\infty}<10^{-3}$ for smoke simulations and and $10^{-5}$ for
+free surface produced visually pleasing results. 
+
+
 Table~\ref{fig_runtimes} gives runtimes for the voxelized Poisson solves in our simulations.  Although we used resolutions substantially higher than typical, the Poisson solves represent between $25\%$ and $50\%$ of total simulation time. 
 These examples demonstrate the solver's ability to handle rapidly changing domain geometries and to converge with just a few PCG iterations in practical
 settings. 
 
 Figure~\ref{fig_convergence} compares the convergence of our method with CG and incomplete Cholesky PCG in terms of rate per iteration. As incomplete Cholesky PCG involves sparse back-substitution and cannot be parallelized without significant effort (if at all), we compare serial runtimes for an incomplete Cholesky PCG implementation, a ``black-box'' conjugate gradient solver, our streamlined conjugate gradient solver, and our multigrid preconditioned solver to a given tolerance on the smoke past sphere domain in Table~\ref{fig_runtime_comparison}.  Even without the aid of parallelization, we see a $4.5\times$ speed-up at $128^3$ over ICPCG, a $10\times$ speed-up at $256^3$, and a $20\times$ speed-up at $512^3$ resolution.  Our ICPCG and ``black-box'' CG solvers are generic implementations with explicit compressed sparse row matrix representations.
 
-% \vspace*{-.05in}
 \section{Limitations and future work}
- %\vspace*{-.05in}
 \label{sec_discussion}
 Our performance at high resolutions is largely due to parallelization. While the convergence rate remains excellent, parallel scalability is inferior at lower resolutions. Our method was tuned
 for shared-memory multiprocessors since we targeted problem sizes that would not fit on GPU memory. However, our method would benefit from the bandwidth of GPU platforms and we will
@@ -499,13 +491,13 @@ investigate GPU ports of our method as future work. Methods that approximate the
 
 \begin{table}[tb]
  \center{\includegraphics[width=\columnwidth]{poisson/figures/runtime_compare.pdf}}
- \caption{Number of iterations and \textbf{serial} runtimes for our modified conjugate gradient(*) and a ``black box''($\dagger$) solver (top), incomplete Cholesky PCG (middle), and our method (bottom).  Initialization time includes building any matrices and computing incomplete Cholesky factorization for ICPCG or building multigrid hierarchy for MGPCG.}\label{fig_runtime_comparison}
+ \caption[Runtime comparison with CG and ICPCG.]{Number of iterations and \textbf{serial} runtimes for our modified conjugate gradient(*) and a ``black box''($\dagger$) solver (top), incomplete Cholesky PCG (middle), and our method (bottom).  Initialization time includes building any matrices and computing incomplete Cholesky factorization for ICPCG or building multigrid hierarchy for MGPCG.}\label{fig_runtime_comparison}
 \end{table}
 
 
 \begin{table}[tb]
 \center{\includegraphics[width=\columnwidth]{poisson/figures/runtimes1.pdf}}
-\caption{Execution cost and parallel speedup for our method. All parallel computations were carried out on a 16-core Intel Xeon X7350 server with 32GB of RAM. (*)Initialization refers to multigrid hierarchy initialization.}
+\caption[Execution cost and parallel speedup for our method.]{Execution cost and parallel speedup for our method. All parallel computations were carried out on a 16-core Intel Xeon X7350 server with 32GB of RAM. (*)Initialization refers to multigrid hierarchy initialization.}
 \label{fig_runtimes}
 \end{table}
 
@@ -513,7 +505,7 @@ investigate GPU ports of our method as future work. Methods that approximate the
 
 \begin{figure}[tcb]
 \center{\includegraphics[width=\columnwidth]{poisson/figures/convergence.pdf}}
-\caption{
+\caption[Convergence comparison with CG and ICPCG.]{
 Comparison of multigrid-preconditioned CG (MGPCG), incomplete Cholesky PCG (ICPCG) and unpreconditioned CG (CG).
 The horizontal axis corresponds to iterations, the vertical indicates the residual reduction factor $|r_k|/|r_0|$ after $k$ iterations.
 }
