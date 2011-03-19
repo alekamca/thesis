@@ -522,6 +522,7 @@
   \tableofcontents
   \listoffigures
   \listoftables
+  \listofalgorithms
   \@makeacknowledgments
   \@makevitapage
   \@makeabstractpage{\@doublespacing}
