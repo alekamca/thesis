@@ -398,7 +398,6 @@ been written to indicate such combinable operations on the same line, e.g., line
 %% $\mu,\nu$ are computed at the end of the loop as $\mu=r_{\mbox{\small sum}}/N$ and $\nu=\max\{|r_{\mbox{\small min}}-\mu|,|r_{\mbox{\small max}}-\mu|\}$. We performed a similar
 %% aggregation of all the vector operations listed on the lines mentioned.
 
-%% \vspace*{-.06in}
 \noindent\textbf{Multithreading:} Most of the operations in our solver are trivially parallelizable, as they are order independent (excluding the boundary smoother). In order to parallelize the boundary Gauss-Seidel smoother, we tiled the domain with blocks of size $4\times 4\times 4$ which were subsequently red-black
 colored. Subsequently, we parallelize the Gauss-Seidel sweep over the red blocks, distributing a balanced number of blocks to each processor, without fine-grain locking. Black blocks are
 processed in a separate parallel sweep. 
@@ -407,7 +406,6 @@ processed in a separate parallel sweep.
 Iterating the Gauss-Seidel smoother as many as 10 times within each block costs less than twice
 the cost of a single iteration (due to cache effects) which further improved the efficiency of our preconditioner.
 
-%% \vspace*{-.06in}
 \noindent\textbf{Variable reuse and storage footprint:} Our methodology reuses vector variables to minimize the memory footprint. We only
 require (and reuse) the following 5 vector variables, defined over the entire domain: $\vec{x}$ (for initial guess and solution), $\vec{r}$ (for initial right hand side, subsequent residuals and also
 the right-hand side $\vec{b}^{(0)}$ at the top level of the V-Cycle), $\vec{p},\vec{z}$ (reused throughout CG, also used as the solution $\vec{u}^{(0)}$ at the finest V-Cycle level)
