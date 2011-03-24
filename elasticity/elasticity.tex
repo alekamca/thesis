@@ -10,6 +10,7 @@ facilitate performance on modern hardware. Although standard methods for
 hexahedra require 8 point Gauss quadrature per cell for stability, we develop a
 much more efficient one-point quadrature discretization
 (section~\ref{sec:stabilization}).
+
 \subsection{Fundamentals}
 \label{sec:fundamentals}
 
@@ -39,19 +40,17 @@ where $\mu,\lambda$ are the Lam\'{e} coefficients, and $\mathbf{R}$ is the rotat
 We discretize our model domain $\Omega$ into cubic elements $\Omega_e$ of step size $h$ so $\Omega=\cup_e\Omega_e$. The degrees of freedom are world space samples of
 $\vec{x}_i=\vec{\phi}(\vec{X}_i)$. The discrete version of
 equation~(\ref{eqn_energy_integral}) then becomes a sum of energies from each element $E_e$.  Using just a single quadrature point for the voxel center $\vec{p}^c$ gives $E_e \approx h^3\Psi(\mathbf{F}^e)$ where $\mathbf{F}^e\approx\mathbf{F(\vec{p}^c)}$ is computed with central differences about the cell center from averaged faces.
-\begin{wrapfigure}{r}{.9in}
-\vspace{-.15in}
-\mbox{\hspace{-.3in}
+\begin{figure}
+\centering
 \includegraphics[width=.35\columnwidth]{elasticity/figures/grid.pdf}
-}
-\vspace{-.15in}
-\end{wrapfigure}
+\caption{A sample cubic element.}\label{fig:cubic_element}
+\end{figure}
  This approximation can be written
 \begin{equation}
 F_{ij}^e=\sum_kG_{jk}^ex_k^{(i)}
 \label{eqn_discrete_gradient}
 \end{equation}
-where $x_k^{(i)}$ is the $i$-th component of the three-dimensional vector $\vec{x}_k$ (see right) and we have
+where $x_k^{(i)}$ is the $i$-th component of the three-dimensional vector $\vec{x}_k$ (see Figure~\ref{fig:cubic_element}) and we have
 a \emph{discrete gradient}
 {\small$$
 \mathbf{G}^e=
@@ -68,13 +67,11 @@ Finally, we have a means to compute the total energy in terms only of the nodal 
 
 
 
-\begin{figure}[b!]
-\center{\includegraphics[width=\linewidth]{elasticity/figures/warpedcomp}}
+\begin{figure}[th]
+\center{\includegraphics[width=.7\linewidth]{elasticity/figures/warpedcomp}}
 \caption{Inexact methods of computing force differentials lead to instabilities
 unlike our method}
-%\vspace{-15pt}
 \label{fig:warpedstiff}
-%\vspace{-15pt}
 \end{figure}
 
 \subsection{Force and equilibrium}
@@ -90,7 +87,7 @@ A discrete force per node can in general be written as
  Using equation (\ref{eqn_discrete_gradient}) and the fact that $\Psi$ is a function of the deformation gradient alone, a concise expression for each of the components
 of $\vec{f}_i^e=(f_i^{(1)},f_i^{(2)},f_i^{(3)})$ (the force contribution to node $i$ from element $e$) is: 
 \begin{eqnarray}
-\vec{f}_i^{(j)}\!\!\!&\!\!\!=\!\!\!&\!\!\!-\frac{\partial E_e}{\partial\vec{x}_i^{(j)}}=-V_e\frac{\partial\Psi(\mathbf{F}^e)}{\partial\vec{x}_i^{(j)}}
+f_i^{(j)}\!\!\!&\!\!\!=\!\!\!&\!\!\!-\frac{\partial E_e}{\partial\vec{x}_i^{(j)}}=-V_e\frac{\partial\Psi(\mathbf{F}^e)}{\partial\vec{x}_i^{(j)}}
 =
 -V_e\sum_{k,l}\left.\frac{\partial\Psi}{\partial F_{kl}}\right|_{\mathbf{F}^e}\frac{\partial F_{kl}^e}{\partial\vec{x}_i^{(j)}} \nonumber \\
 \!\!\!&\!\!\!=\!\!\!&\!\!\!
@@ -107,9 +104,10 @@ For corotational elasticity, equation~(\ref{eqn_energy_F}), we specifically get:
 %  \mathbf{P}&\!\!=\!\!&2\mu(\mathbf{F}\!-\!\mathbf{R})+\lambda\ \!\tr(\mathbf{R}^T\mathbf{F}\!-\!\mathbf{I})\ \!\mathbf{R},%\hspace*{.2in} \label{eqn_piola_stress1}\\
 %  \mbox{or,}\ \ \mathbf{P}&\!\!=\!\!&\mathbf{R}\left[2\mu(\mathbf{S}\!-\!\mathbf{I})+\lambda\ \!\tr(\mathbf{S}\!-\!\mathbf{I})\ %\!\mathbf{I}\right]. \label{eqn_piola_stress2}
 %\end{eqnarray}
-\begin{equation}
-\mathbf{P}=\mathbf{R}\left[2\mu(\mathbf{S}-\mathbf{I})+\lambda\\tr(\mathbf{S}-\mathbf{I})\right]
-\label{eqn_piola_stress}\end{equation}
+\begin{align}
+\mathbf{P}&=2\mu\left(\mathbf{F}-\mathbf{R}\right) + \lambda \tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\mathbf{R}\nonumber\\
+        &=\mathbf{R}\left[2\mu(\mathbf{S}-\mathbf{I})+\lambda \tr(\mathbf{S}-\mathbf{I})\right]\label{eqn_piola_stress}
+\end{align}
 Combining this with equation~\ref{eqn_nodal_forces} we have a matrix
 that maps the nodal positions of a cell to its force contribution
 \begin{equation}
@@ -175,26 +173,54 @@ as $\delta\vec{f}_i\!=\!\sum_e\delta\vec{f}_i^e$, where:
 Taking differentials of $\mathbf{R}^T\mathbf{R}\!\!=\!\!\mathbf{I}$ we get $(\mathbf{R}^T\!\delta\mathbf{R})^T\!+\!\mathbf{R}^T\!\delta\mathbf{R}\!=\!0$, thus the matrix $\delta\mathbf{R}^T\mathbf{R}$
 is skew symmetric. Consequently $\tr(\delta\mathbf{R}^T\mathbf{F})\!=\!\tr(\delta\mathbf{R}^T\mathbf{RS})\!=\!(\delta\mathbf{R}^T\mathbf{R}):\mathbf{S}\!=\!0$ as a contraction of a
 symmetric and a skew symmetric matrix. Using this result, we take differentials on equation (\ref{eqn_piola_stress}) to obtain
-\begin{eqnarray}
-  \delta\mathbf{P}\hspace*{-.12in}&\hspace*{-.12in}=\hspace*{-.12in}&2\mu(\delta\mathbf{F}-\delta\mathbf{R})+\lambda\left\{\tr(\delta\mathbf{R}^T\mathbf{F})
-  +\tr(\mathbf{R}^T\delta\mathbf{F})\right\}\mathbf{R}\hspace{.2in} \nonumber \\ 
-&&+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\delta\mathbf{R} \nonumber \\
-  &\hspace*{-.12in}=\hspace*{-.12in}&2\mu\delta\mathbf{F}+\lambda\tr(\mathbf{R}^T\delta\mathbf{F})\mathbf{R}
+\begin{align}
+  \delta\mathbf{P}=&2\mu(\delta\mathbf{F}-\delta\mathbf{R})+\lambda\left\{\tr(\delta\mathbf{R}^T\mathbf{F})
+  +\tr(\mathbf{R}^T\delta\mathbf{F})\right\}\mathbf{R}\nonumber \\ 
+  &+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\delta\mathbf{R} \nonumber \\
+  =&2\mu\delta\mathbf{F}+\lambda\tr(\mathbf{R}^T\delta\mathbf{F})\mathbf{R}
   +\left\{\lambda\tr(\mathbf{S}-\mathbf{I})-2\mu\right\}\delta\mathbf{R}. \label{eqn_stress_differential}
-\end{eqnarray}
+\end{align}
+
 The differential $\delta\mathbf{F}$ of the (discrete, cell-centered) deformation gradient is computed from equation (\ref{eqn_discrete_gradient}) according to the formula:
 \begin{equation}
 \delta F_{ij}^e=\sum_kG_{jk}^e\delta x_k^{(i)}.
 \label{eqn_deformation_gradient_differential}
 \end{equation}
+
 The differential of rotation $\mathbf{R}$ is given by
 \begin{equation}
 \delta\mathbf{R}=\mathbf{R}\left[\mathcal{E}:\left(\left(\tr(\mathbf{S})\mathbf{I}-\mathbf{S}\right)^{-1}\left(\mathcal{E}^T:(\mathbf{R}^T\delta\mathbf{F})\right)\right)\right]
 \label{eqn_rotation_differential}
 \end{equation}
-where $\mathcal{E}$ is the {alternating third order tensor}  which maps a vector
-to a cross product matrix. Equation (\ref{eqn_rotation_differential}) is a compact expression of the result presented in \cite{twigg2010point}, see also the attached technical document
-for a detailed proof.
+where $\mathcal{E}$ is the Levi-Civita symbol or permutation tensor. Equation (\ref{eqn_rotation_differential})
+is a compact expression of the result presented
+in \cite{twigg2010point} and we give its derivation as follows.
+
+From the polar decomposition of $\mathbf{F}$ we have
+\begin{align}
+\delta\mathbf{F} &= \mathbf{R}\delta\mathbf{S}
++ \delta \mathbf{R}\mathbf{S}.\nonumber\\
+\intertext{Left multiplying by $\mathbf{R}^T$ we get}
+\mathbf{R}^T\delta\mathbf{F} &= \delta\mathbf{S}
++ \mathbf{R}^T\delta \mathbf{R}\mathbf{S}.\label{eqn:Rt_dF}
+\end{align}
+Since $\mathbf{R}^T\delta\mathbf{R}$ is skew-symmetric, we can write
+it as the cross product matrix 
+\begin{align*}
+\mathbf{r}_\times &:= -\mathcal{E}:\mathbf{r}\\
+                  &=\left(\begin{array}{ccc}
+                  0 & -r_3 & r_2\\
+                  r_3& 0 & -r_1\\
+                  -r_2 & r_1 & 0\end{array}\right),
+\end{align*} 
+where $\mathbf{r}= (r_1,r_2,r_3)$. With
+$\mathbf{W}:=\mathbf{R}^T\delta\mathbf{F}$, from
+Equation~(\ref{eqn:Rt_dF}), we have
+\begin{equation*}
+\delta\mathbf{S} = \mathbf{W}-\mathbf{r}_\times\mathbf{S}.
+\end{equation*}
+
+
 
 In summary, for every cell $\Omega_e$, we compute the cell-centered deformation gradient $\mathbf{F}^e$ using
 equation (\ref{eqn_discrete_gradient}) and compute its polar decomposition. Using equations (\ref{eqn_stress_differential}), (\ref{eqn_deformation_gradient_differential}) and
