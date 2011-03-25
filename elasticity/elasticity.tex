@@ -35,7 +35,7 @@ corotational elasticity we have
 \end{equation}
 where $\mu,\lambda$ are the Lam\'{e} coefficients, and $\mathbf{R}$ is the rotation from the polar decomposition $\mathbf{F}=\mathbf{RS}$.
 
-%% \subsection{Energy discretization}
+\subsection{Energy discretization}
 
 We discretize our model domain $\Omega$ into cubic elements $\Omega_e$ of step size $h$ so $\Omega=\cup_e\Omega_e$. The degrees of freedom are world space samples of
 $\vec{x}_i=\vec{\phi}(\vec{X}_i)$. The discrete version of
@@ -98,16 +98,44 @@ f_i^{(j)}\!\!\!&\!\!\!=\!\!\!&\!\!\!-\frac{\partial E_e}{\partial\vec{x}_i^{(j)}
 -V_e[\mathbf{P}(\mathbf{F}^e)\mathbf{G}^e]_{ji}.
 \label{eqn_nodal_forces}
 \end{eqnarray}
-where $\mathbf{P}(\mathbf{F})\!:=\!\partial\Psi/\partial\mathbf{F}$ is the 1st Piola-Kirchhoff stress tensor.
-For corotational elasticity, equation~(\ref{eqn_energy_F}), we specifically get:
-%\begin{eqnarray}
-%  \mathbf{P}&\!\!=\!\!&2\mu(\mathbf{F}\!-\!\mathbf{R})+\lambda\ \!\tr(\mathbf{R}^T\mathbf{F}\!-\!\mathbf{I})\ \!\mathbf{R},%\hspace*{.2in} \label{eqn_piola_stress1}\\
-%  \mbox{or,}\ \ \mathbf{P}&\!\!=\!\!&\mathbf{R}\left[2\mu(\mathbf{S}\!-\!\mathbf{I})+\lambda\ \!\tr(\mathbf{S}\!-\!\mathbf{I})\ %\!\mathbf{I}\right]. \label{eqn_piola_stress2}
-%\end{eqnarray}
+where $\mathbf{P}(\mathbf{F})\!:=\!\partial\Psi/\partial\mathbf{F}$ is
+the 1st Piola-Kirchhoff stress tensor.
+
+To compute $\mathbf{P}(\mathbf{F})$ for corotational elasticity from
+Equation~(\ref{eqn_energy_F}), we begin by noting that the matrix $\delta\mathbf{R}^T\mathbf{R}$
+is skew symmetric.  This can be shown by taking differentials of
+$\mathbf{R}^T\mathbf{R}=\mathbf{I}$ to get $\mathbf{R}^T\!\delta\mathbf{R})^T+\mathbf{R}^T\!\delta\mathbf{R}=0$.
+Consequently 
+\begin{align}
+\tr(\delta\mathbf{R}^T\mathbf{F})&=\tr(\delta\mathbf{R}^T\mathbf{RS})\nonumber\\
+        &=(\delta\mathbf{R}^T\mathbf{R}):\mathbf{S}\nonumber\\
+        &=0\label{eqn:tr_dRt_F}
+\end{align} 
+as a contraction of a
+symmetric and a skew symmetric matrix. 
+
+Taking differentials of the energy density in
+equation~(\ref{eqn_energy_F}), we compute
+\begin{align*}
+\delta\mathbf{\Psi} =&
+2\mu(\mathbf{F}-\mathbf{R}):\delta\mathbf{F}-2\mu(\mathbf{F}-\mathbf{R}):\delta\mathbf{R}\\
+&+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\left(\tr(\mathbf{R}^T\delta\mathbf{F})+\tr(\delta\mathbf{R}^T\mathbf{F})\right)\\
+=&2\mu(\mathbf{F}-\mathbf{R}):\delta\mathbf{F}-2\mu\tr(\delta\mathbf{R}^T\mathbf{F})-2\mu\tr(\delta\mathbf{R}^T\mathbf{R})\\
+ &+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\left(\mathbf{R}:\delta\mathbf{F}+\tr(\delta\mathbf{R}^T\mathbf{F})\right)
+\end{align*}
+Using the skew-symmetry of $\delta\mathbf{R}^T\mathbf{R}$
+and equation~(\ref{eqn:tr_dRt_F}), we can eliminate all
+$\delta\mathbf{R}$ terms to get
+\begin{equation}
+\delta\Psi=\left(2\mu(\mathbf{F}-\mathbf{R})+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\mathbf{R}\right):\delta\mathbf{F}.\label{eqn:dPsi}
+\end{equation}
+Since $\delta\Psi = \partial\Psi/\partial\mathbf{F}:\delta\mathbf{F} = \mathbf{P}:\delta\mathbf{F}$, we can compute 
 \begin{align}
 \mathbf{P}&=2\mu\left(\mathbf{F}-\mathbf{R}\right) + \lambda \tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\mathbf{R}\nonumber\\
-        &=\mathbf{R}\left[2\mu(\mathbf{S}-\mathbf{I})+\lambda \tr(\mathbf{S}-\mathbf{I})\right]\label{eqn_piola_stress}
+        &=\mathbf{R}\left[2\mu(\mathbf{S}-\mathbf{I})+\lambda \tr(\mathbf{S}-\mathbf{I})\right].\label{eqn_piola_stress}
 \end{align}
+
+
 Combining this with equation~\ref{eqn_nodal_forces} we have a matrix
 that maps the nodal positions of a cell to its force contribution
 \begin{equation}
@@ -170,15 +198,15 @@ as $\delta\vec{f}_i\!=\!\sum_e\delta\vec{f}_i^e$, where:
 =-h^3\delta\left[\mathbf{P}(\mathbf{F}^e)\right]\mathbf{G}^e.
 \label{eqn_elemental_force_differentials}
 \end{equation}
-Taking differentials of $\mathbf{R}^T\mathbf{R}\!\!=\!\!\mathbf{I}$ we get $(\mathbf{R}^T\!\delta\mathbf{R})^T\!+\!\mathbf{R}^T\!\delta\mathbf{R}\!=\!0$, thus the matrix $\delta\mathbf{R}^T\mathbf{R}$
-is skew symmetric. Consequently $\tr(\delta\mathbf{R}^T\mathbf{F})\!=\!\tr(\delta\mathbf{R}^T\mathbf{RS})\!=\!(\delta\mathbf{R}^T\mathbf{R}):\mathbf{S}\!=\!0$ as a contraction of a
-symmetric and a skew symmetric matrix. Using this result, we take differentials on equation (\ref{eqn_piola_stress}) to obtain
+
+Taking differentials on equation (\ref{eqn_piola_stress}) and using
+equation (\ref{eqn:tr_dRt_F}), we obtain
 \begin{align}
-  \delta\mathbf{P}=&2\mu(\delta\mathbf{F}-\delta\mathbf{R})+\lambda\left\{\tr(\delta\mathbf{R}^T\mathbf{F})
-  +\tr(\mathbf{R}^T\delta\mathbf{F})\right\}\mathbf{R}\nonumber \\ 
+  \delta\mathbf{P}=&2\mu(\delta\mathbf{F}-\delta\mathbf{R})+\lambda\left[\tr(\delta\mathbf{R}^T\mathbf{F})
+  +\tr(\mathbf{R}^T\delta\mathbf{F})\right]\mathbf{R}\nonumber \\ 
   &+\lambda\tr(\mathbf{R}^T\mathbf{F}-\mathbf{I})\delta\mathbf{R} \nonumber \\
   =&2\mu\delta\mathbf{F}+\lambda\tr(\mathbf{R}^T\delta\mathbf{F})\mathbf{R}
-  +\left\{\lambda\tr(\mathbf{S}-\mathbf{I})-2\mu\right\}\delta\mathbf{R}. \label{eqn_stress_differential}
+  +\left[\lambda\tr(\mathbf{S}-\mathbf{I})-2\mu\right]\delta\mathbf{R}. \label{eqn_stress_differential}
 \end{align}
 
 The differential $\delta\mathbf{F}$ of the (discrete, cell-centered) deformation gradient is computed from equation (\ref{eqn_discrete_gradient}) according to the formula:
@@ -219,6 +247,34 @@ Equation~(\ref{eqn:Rt_dF}), we have
 \begin{equation*}
 \delta\mathbf{S} = \mathbf{W}-\mathbf{r}_\times\mathbf{S}.
 \end{equation*}
+
+Without loss of generality, assume $(i,j,k)$ is an even permutation of
+$(1,2,3)$.  Then by the symmetry of $\delta\mathbf{S}$, we have
+\begin{equation*}
+W_{ij} - \left(\mathbf{r}_\times\mathbf{S}\right)_{ij} = W_{ji}
+- \left(\mathbf{r}_\times\mathbf{S}\right)_{ji}.
+\end{equation*}
+Rearranging terms and substituting $\sum_m-\mathcal{E}_{ijm}r_m
+= \left(\mathbf{r}_\times\right)_{ij}$, we have
+\begin{align*}
+W_{ij}-W_{ji} &= \sum_{l,m}-\mathcal{E}_{ilm}r_mS_{lj}
++ \mathcal{E}_{jlm}r_mS_{li}\\
+  &= -r_kS_{jj} + r_jS_{kj} - r_kS_{ii} + r_iS_{ki}\\
+  &= \left(r_iS_{ki} + r_jS_{kj} + r_kS_{kk}\right) - r_k\left(S_{kk}-S_{jj}-S_{ii}\right)
+\end{align*}
+We can see that the first term is the $k$th component of $\mathbf{Sr}$
+and the second term is the $k$th component of
+$-\tr(\mathbf{S})\mathbf{r}$, thus
+\begin{equation}
+\left(\mathbf{S}-\tr(\mathbf{S})\mathbf{I}\right)\mathbf{r}
+= \left(\begin{array}{c} W_{23}-W_{32}\\
+W_{31}-W_{13}\\
+W_{12}-W_{21}\end{array}\right) = \mathcal{E}^T:\mathbf{W}.\label{eqn:linear_r}
+\end{equation}
+
+We can then substitute the solution for $\mathbf{r}$ from
+equation~(\ref{eqn:linear_r}) into $\delta\mathbf{R} =
+-\mathbf{R}\left(\mathcal{E}:\mathbf{r}\right)$ to get the result in equation~(\ref{eqn_rotation_differential}).
 
 
 
