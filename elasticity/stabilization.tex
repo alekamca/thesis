@@ -12,32 +12,29 @@ oscillatory nullspace modes are more than visual artifacts, they compromise the
 ellipticity of the discrete equations in multigrid methods. This is why standard
 discretizations use higher-order quadrature, gaining stability at higher cost.
 
-\begin{figure}[b!]
+\begin{figure}[tbh]
 \center{\includegraphics[width=.6\columnwidth]{elasticity/figures/discretization}}
-\caption{A 2D elastic patch is stretched by pinning the four corners to target locations. Left: The unmodified one-point quadrature method is riddled by hourglassing
+\caption[A 2D comparison of quadrature rules]{A 2D elastic patch is stretched by pinning the four corners to target locations. Left: The unmodified one-point quadrature method is riddled by hourglassing
   instabilities. Right: Our method.}
 \vspace{-10pt}
 \label{fig_instability}
 \end{figure}
 
 
-\begin{wrapfigure}{r}{.75in}
-\vspace{-.15in}
-\mbox{
-\hspace{-.3in}
+\begin{figure}[th]
+\centering
 \includegraphics[width=.3\columnwidth]{elasticity/figures/quadrature}
-}
-%\vspace{-.15in}
-%\hspace{-.3in}\caption{Our quadrature}
+\caption{Our quadrature}
 \label{fig_quadrature}
-\vspace{-.25in}
-\end{wrapfigure}
+\end{figure}
 We remedy this instability by proposing a new integration rule that is
 stable yet computationally cheap (requires only one polar decomposition per cell). As an initial observation, we have experimentally verified that the term $\mu\|\mathbf{F}-\mathbf{R}\|_F^2$ in equation (\ref{eqn_energy_F}) is
 the one which primarily determines stability; we observed that if a stable technique (e.g.\ 8-point Gauss quadrature) is used to integrate this term, the entire scheme will remain
 stable, even if the naive 1-point quadrature is used for the term  $\frac{\lambda}{2}\tr^2(\mathbf{R}^T\mathbf{F}-\mathbf{I})$. Thus, we will initially present our approach in the context
 of the simpler energy $\Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2$, and address the 2D case first (e.g.\ on a square lattice). In addition to the cell center $\vec{p}^e$ we introduce four
-additional quadrature points $\vec{p}^q,\ q\in\{A,B,C,D\}$, located on edge centers of the quadrilateral lattice, as seen in figure (\ref{fig_quadrature}). We write the energy as
+additional quadrature points $\vec{p}^q,\ q\in\{A,B,C,D\}$, located on
+edge centers of the quadrilateral lattice, as seen in figure
+(\ref{fig_quadrature}). We write the energy density as
 \begin{equation}
 \Psi=\mu\sum_{i,j}
   (F_{ij}-R_{ij})^2.
@@ -61,21 +58,23 @@ E_1=\frac{\mu h^2}{2}\sum_{i=1}^2\left((F_{i1}^A)^2\!+\!(F_{i1}^B)^2\!+\!(F_{i2}
 \label{eqn_quadrature_poisson}
 \end{equation}
 \begin{equation}
-E_2=\mu h^2\left[-2\tr\left(\mathbf{R}^{eT}\mathbf{F}^e\right)+\|\mathbf{I}\|_F^2\right]
+E_2=\mu h^2\left[-2\tr\left(\mathbf{R}^{eT}\mathbf{F}^e\right)+\mu\|\mathbf{I}\|_F^2\right]
 \label{eqn_quadrature_aux}
 \end{equation}
 The energy discretization suggested by equations (\ref{eqn_quadrature_poisson}) and (\ref{eqn_quadrature_aux}) is stable, as seen by our results and the convergent multigrid schemes
-we have constructed on its basis. In order to better explain the mechanics of this approach, we manipulate the $\mu$-component of the energy as follows:
+we have constructed on its basis. In order to better explain the
+mechanics of this approach, we manipulate the $\mu$-component of the
+energy density as follows:
 $$
 \Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2=\mu\|\mathbf{F}\|_F^2-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\|\mathbf{I}\|_F^2.
 $$
 Equation (\ref{eqn_quadrature_poisson}) suggests a quadrature rule for the term $\mu\|\mathbf{F}\|_F^2$. The integral $\frac{1}{2}\int\|\mathbf{F}\|_F^2$ is the weak form of the
 component-wise Laplace operator; thus equation (\ref{eqn_quadrature_poisson}) generates an energy discretization for the Laplace operator $2\mu\Delta$. Equation
-(\ref{eqn_quadrature_aux}) is nothing but a one-point quadrature, but on the term $-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\|\mathbf{I}\|_F^2$. In fact, at this point we can
+(\ref{eqn_quadrature_aux}) is nothing but a one-point quadrature, but on the term $-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\mu\|\mathbf{I}\|_F^2$. In fact, at this point we can
 re-introduce the omitted $\lambda$-term of the energy, and write $\Psi$ as:
 \begin{equation}
 \Psi=\underbrace{\mu\|\mathbf{F}\|_F^2}_{\Psi_\Delta}
-\underbrace{-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\|\mathbf{I}\|_F^2+\frac{\lambda}{2}\tr^2(\mathbf{R}^T\mathbf{F}-\mathbf{I})}_{\Psi_{\mbox{\small aux}}}
+\underbrace{-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\mu\|\mathbf{I}\|_F^2+\frac{\lambda}{2}\tr^2(\mathbf{R}^T\mathbf{F}-\mathbf{I})}_{\Psi_{\mbox{\small aux}}}
 \label{eqn_psi_poisson_and_aux}
 \end{equation}
 We implement this discretization, by separating energy, forces, and force differentials into two components: (a) a term stemming from the Laplace energy $\Psi_\Delta$, and (b) an

@@ -23,7 +23,10 @@ Similar to \cite{teran:2005:quasistatics} we will conservatively enforce the def
 counterpart, i.e.\ a matrix with the same eigenvectors, but with negative eigenvalues clamped to zero. Naturally, we want to avoid an explicit eigenanalysis of the $24\times 24$
 elemental stiffness $\mathbf{K}^e$, and even avoid forming it at altogether. We describe a procedure to perform this semi-definite projection in an inexpensive, matrix-free fashion. We
 will initially describe the definiteness projection for the simple one-point quadrature rule, defined in section \ref{sec:elasticity}. This will be a stepping stone in designing a
-definiteness fix for our stabilized quadrature rule, described in section \ref{sec:stabilization}. The elemental stiffness matrix is positive semi-definite if and only if
+definiteness fix for our stabilized quadrature rule, described in
+section \ref{sec:stabilization}. 
+
+The elemental stiffness matrix is positive semi-definite if and only if
 $0\leq\delta\vec{x}^T\mathbf{K}^e\delta\vec{x}=-\delta\vec{x}^T\delta\vec{f}$, where $\delta\vec{x}$, $\delta\vec{f}$ are the stacked nodal position and force differentials for
 $\Omega_e$. Taking differentials on both sides of equation (\ref{eqn_nodal_forces}) we get: 
 $$
@@ -33,16 +36,17 @@ $$
 $$
 where $\mathcal{T}=[T_{ijkl}]$ is the fourth order tensor defined as the stress derivative $\mathcal{T}:=\partial\mathbf{P}/\partial\mathbf{F}$, or $T_{ijkl}=\partial P_{ij}/\partial
 F_{kl}$. We then write:
-$$
--\delta\vec{x}^T\delta\vec{f}=-\sum_{i,j}\delta f_i^{(j)}\delta x_i^{(j)}
-=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\sum_iG_{ki}^e\delta x_i^{(j)}
-$$
-%$$
-%\stackrel{\mbox{\it\small(Eqn.\ref{eqn_discrete_gradient})}}{=}V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}  \delta F^e_{jk}
-%=V_e\left(\delta\mathbf{F}^e:\mathcal{T}:\delta\mathbf{F}^e\right).
-%$$
+\begin{align*}
+-\delta\vec{x}^T\delta\vec{f}&=-\sum_{i,j}\delta f_i^{(j)}\delta x_i^{(j)}\\
+&=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\sum_iG_{ki}^e\delta
+x_i^{(j)}\\
+&=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\delta F^e_{jk}
+\end{align*}
 Thus, $\mathbf{K}^e$ will be positive semi-definite, if and only if the fourth order tensor $\partial\mathbf{P}/\partial\mathbf{F}$ is positive definite as well (in the sense that
-$\delta\mathbf{F}:\mathcal{T}:\delta\mathbf{F}\geq 0$, for all $\delta\mathbf{F}$). At this point, consider a different 4th order tensor $\hat{\mathcal{T}}$ defined by
+$\delta\mathbf{F}:\mathcal{T}:\delta\mathbf{F}\geq 0$, for all
+$\delta\mathbf{F}$). 
+
+At this point, consider a different 4th order tensor $\hat{\mathcal{T}}$ defined by
 $\delta\mathbf{P}=\mathcal{T}:\delta\mathbf{F}=\mathbf{R}[\hat{\mathcal{T}}:(\mathbf{R}^T\delta\mathbf{F})]$. Intuitively, if we define the \emph{unrotated} differentials
 $\delta\hat{\mathbf{P}}=\mathbf{R}^T\delta\mathbf{P}$, and $\delta\hat{\mathbf{F}}=\mathbf{R}^T\delta\mathbf{F}$, then $\hat{\mathcal{T}}$ is the tensor that maps
 $\delta\hat{\mathbf{P}}=\hat{\mathcal{T}}:\delta\hat{\mathbf{F}}$. Tensors $\mathcal{T}$ and $\hat{\mathcal{T}}$ are a similarity transform of one another; consequently they share the
