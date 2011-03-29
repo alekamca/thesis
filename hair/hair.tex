@@ -69,7 +69,7 @@ further. A
 more detailed discussion on these topics can be found in the recent
 survey paper \cite{ward:2007:hairsurvey}.
 
-\noindent\textbf{Strand Dynamics.} Many hair simulation techniques consider different geometric 
+\paragraph{Strand Dynamics.} Many hair simulation techniques consider different geometric 
 and constitutive models
 for modeling individual hair strands or clumps of hair starting with
 mass spring systems \cite{rosenblum:1991:hair} and projective dynamics
@@ -90,7 +90,7 @@ dynamics has been extensive, and our technique can be used with the
 practitioner's model of choice, but for simplicity we use
 the mass/spring model.
 
-\noindent\textbf{Hair Interaction and Complexity.}
+\paragraph{Hair Interaction and Complexity.}
 The simplest (but most expensive) approach to hair complexity
 management is simulating and rendering every hair
 \cite{rosenblum:1991:hair,anjyo:1992:hair,selle:2008:hair}. While this
@@ -107,7 +107,7 @@ accuracy for computational tractability:
     and as a volumetric velocity field.}
 \end{figure}
 
-\noindent\textbf{Continuum models.}  \cite{hadap:2001:continuum-hair} uses a Lagrangian
+\paragraph{Continuum models.}  \cite{hadap:2001:continuum-hair} uses a Lagrangian
 fluid (smoothed particle hydrodynamics) technique to model fluid forces on a
 mass/spring system. While this efficiently handles bulk behavior, detailed hair
 behavior is lost. In addition, since smoothed particle hydrodynamics (SPH) is
@@ -127,11 +127,10 @@ be imparted on the velocity field. In addition, the goal of the work was to
 model relatively simple hairstyles on stylized characters, so the detail lost by
 using a coarse grid was acceptable for their application.
 
-\noindent\textbf{Clumped models.}  There are many techniques that simulate hair
+\paragraph{Clumped models.}  There are many techniques that simulate hair
 interactions through a sparse set of disjoint guides that collide with one
 another
-\cite{bertails:2006:superhelices,hadap:2006:orientedstrands,gupta:2006:real-time-hair,chang:
-2002:mutualinteractions}.
+\cite{bertails:2006:superhelices,hadap:2006:orientedstrands,gupta:2006:real-time-hair,chang:2002:mutualinteractions}.
 A greater set of rendered hair strands are then either interpolated between
 these guides or clumped to the guide strands.
 \cite{plante:2002:hair-complexity} used a lattice whose vertices were simulated
@@ -142,8 +141,7 @@ model. \cite{bertails:2006:superhelices} used a combination of interpolation and
 clumping to generate rendered strands.  Many clumped techniques also use
 adaptivity to merge or split groups of hair to reduce computation where and when
 the required detail is low
-\cite{bertails:2003:adaptive-wisp-tree,ward:2003:modeling-hair-lod,ward:2003:adaptive-grouping-
-hair}. The
+\cite{bertails:2003:adaptive-wisp-tree,ward:2003:modeling-hair-lod,ward:2003:adaptive-grouping-hair}. The
 use of sparse clumps often allows the use of cheap repulsion penalties as
 opposed to geometric collisions because guides are expected to have
 thickness, and in Section~\ref{sec:collisions} we will discuss how this breaks

@@ -259,13 +259,13 @@ number of times.
 The multigrid scheme we just described is particularly simplistic, using an elementary coarsening strategy, a very basic smoother and without specialized transfer operators near the
 boundary. Not surprisingly, attempting to use this V-Cycle as an iterative solver for the Poisson problem reveals the following shortcomings:
 
-\noindent\textbf{Instability:} When using multigrid as the solver instead of a preconditioner, the iterates produced by the sequence of V-Cycles can become highly oscillatory or divergent unless a substantial smoothing effort is spent near the
+\paragraph{Instability:} When using multigrid as the solver instead of a preconditioner, the iterates produced by the sequence of V-Cycles can become highly oscillatory or divergent unless a substantial smoothing effort is spent near the
 boundary. Specifically, we found it necessary to perform at least 30-40 iterations of boundary smoothing (15-20 iterations before the interior sweep, and 15-20 after) on a boundary band
 at least 3 cells wide, in order to make the V-Cycle iteration stable for highly irregular domains. In contrast, a regular rectangular box domain with all Dirichlet boundary conditions
 required only 2-3 boundary iterations on a boundary band just a single cell wide to remain perfectly stable with a $0.46$ convergence rate. This sensitivity to the regularity of the
 domain is justified given the geometric discrepancies between different levels for irregular domains, and the imprecision of the transfer operators near the boundary, as discussed in \cite{trottenberg:2001:multigrid}. We will show that this sensitivity to the boundary treatment is removed when the V-Cycle is used as a preconditioner.
 
-\noindent\textbf{Stagnation:} Even when the V-Cycle iteration is stable, on certain irregular domains the residual reduction rate quickly degrades towards 1, as opposed to converging to a value
+\paragraph{Stagnation:} Even when the V-Cycle iteration is stable, on certain irregular domains the residual reduction rate quickly degrades towards 1, as opposed to converging to a value
 less than 0.5 as typically expected of functional multigrid schemes. This complication appears on irregular domains where successive levels of the multigrid hierarchy may exhibit
 significant topological differences, as coarse modes may not be accurately represented.  In these cases,  costly eigenanalysis or recombined iterants may prove useful \cite{trottenberg:2001:multigrid}; however, the highly irregular and changing domains common to fluid simulations make these methods impractical.
 
@@ -290,16 +290,17 @@ verify that under these conditions, the action of the V-Cycle indeed corresponds
 less trivial. We refer to \cite{T93} for a detailed analysis of the conditions for symmetry and definiteness, and only present here a set of sufficient conditions instead. The V-Cycle of
 Algorithm~\ref{alg_vcycle} will produce a symmetric and definite preconditioner if:
 
-\noindent$\bullet$ The restriction/prolongation operators are the transpose of one another (up to scaling). This is common practice, and also the case for the V-Cycle we described.
+\begin{itemize}
+\item The restriction/prolongation operators are the transpose of one another (up to scaling). This is common practice, and also the case for the V-Cycle we described.
 
-\noindent$\bullet$ The smoother used in the \emph{upstroke} of the V-Cycle (Algorithm~\ref{alg_vcycle}, line 11) performs the operations of the smoother used for the \emph{downstroke} (line 4) in reverse
+\item The smoother used in the \emph{upstroke} of the V-Cycle (Algorithm~\ref{alg_vcycle}, line 11) performs the operations of the smoother used for the \emph{downstroke} (line 4) in reverse
   order. E.g., if Gauss-Seidel iteration is used, opposite traversal orders should be used when descending or ascending the V-Cycle, respectively. For Jacobi smoothers, no
   reversal is necessary as the result is independent of the traversal order.
 
-\noindent$\bullet$ The solve at the coarsest level (Algorithm~\ref{alg_vcycle}, line 8) needs to either be exact, or the inverse of $\mathcal{L}^{(L)}$ should be approximated with a symmetric and
+\item The solve at the coarsest level (Algorithm~\ref{alg_vcycle}, line 8) needs to either be exact, or the inverse of $\mathcal{L}^{(L)}$ should be approximated with a symmetric and
   definite matrix. If the smoother is iterated to approximate the solution, a number of iterations should be performed with a given traversal order, followed by an equal number of
   iterations with the order reversed.
-
+\end{itemize}
 
 \begin{algorithm}[h]
 \caption[Multigrid-preconditioned conjugate gradient.]{Multigrid-preconditioned conjugate gradient.
@@ -340,7 +341,7 @@ to the V-Cycle preconditioner is needed.
 The simplicity of the V-Cycle enabled extensive optimizations and software tuning for parallel execution on shared memory
 computers. These implementation strategies are detailed below.
 
-\textbf{Minimizing boundary cost:} The cost of performing 30-40 smoothing sweeps on the boundary to stabilize the V-Cycle as a solver cannot be neglected, even though the interior
+\paragraph{Minimizing boundary cost:} The cost of performing 30-40 smoothing sweeps on the boundary to stabilize the V-Cycle as a solver cannot be neglected, even though the interior
 smoothing effort would asymptotically dominate. In practice, this amount of boundary smoothing would be the most costly operation of the V-Cycle for a $256^3$ grid or smaller, assuming serial
 execution. For parallel execution, boundary smoothing would be the clear bottleneck for even higher resolutions ($512^3$ or more in practice) since the boundary smoother has inferior
 scalability to the interior smoother due to the irregularity of the boundary band. Since in our approach the V-Cycle will only be used as a CG preconditioner, we do not need to spend
@@ -364,7 +365,7 @@ reversed between the downstroke and upstroke of the V-Cycle, to ensure symmetry.
 Since the size of the boundary band at every coarser level is reduced by a factor of four, we
 increase the number of boundary sweeps by a factor of 2 every level (i.e., performing $2^{l+1}$ sweeps at level $l$), which incurs only a minimal overhead but further accelerates convergence.
 
-\noindent\textbf{Compact representation of $\mathcal{L}$:} The discrete operator $\mathcal{L}$ contains the standard 7-point stencil in the interior of the domain, with a
+\paragraph{Compact representation of $\mathcal{L}$:} The discrete operator $\mathcal{L}$ contains the standard 7-point stencil in the interior of the domain, with a
 coefficient of $-6/h^2$ on the center cell and $1/h^2$ on the 6 face neighbors. We can eliminate the $1/h^2$ factor by observing that the preconditioning ability of $\mathcal{M}^{-1}$
 remains unchanged if the entire matrix is scaled. Thus, if we consider the V-Cycle to be a solver for $h^2\Delta$ instead of the unscaled Poisson operator, the operator
 coefficients at the interior of the finest level simply become $-6$ and $1$. 
@@ -378,7 +379,7 @@ operator near the boundary.
 In fact, we only store the central coefficient (and its inverse, needed in the smoothing routines) on flattened arrays with the size of the boundary
 band, instead of storing them throughout the entire domain.
 
-\noindent\textbf{Using zero initial guess and boundary conditions:} When the multigrid V-Cycle is used as a preconditioner, it is solving a Poisson problem with zero boundary conditions,
+\paragraph{Using zero initial guess and boundary conditions:} When the multigrid V-Cycle is used as a preconditioner, it is solving a Poisson problem with zero boundary conditions,
 and uses a zero initial guess as discussed in Section \ref{subsec_mgpcg}. Also, every subsequent level of the multigrid correction scheme will also employ zero initial guess and
 boundary conditions. This fact allows us to simplify and combine steps 2,4, and 5 of the algorithm in Algorithm~\ref{alg_vcycle}, which are the most costly components of the V-Cycle
 algorithm. For simplicity, consider an all-Dirichlet problem, where $\mathcal{L}$ has the same 7-point stencil (with coefficients -6 and 1 as discussed before) everywhere in the
@@ -391,14 +392,14 @@ with non-standard stencils, setting those values to zero instead. These cells wi
 sweep will invalidate the residuals computed near the boundary band. We correct this by updating the residuals in the 1-ring of the boundary band at the end of the smoothing procedure.
 
 
-\noindent\textbf{Pipelining operations:} Streaming operations in the PCG algorithm  were often combined in a single pass through memory. The pseudocode in Algorithm~\ref{alg_mgpcg} has
+\paragraph{Pipelining operations:} Streaming operations in the PCG algorithm  were often combined in a single pass through memory. The pseudocode in Algorithm~\ref{alg_mgpcg} has
 been written to indicate such combinable operations on the same line, e.g., lines 2, 4, 6, 8, 13, and 16.
 %% For example, in line 3 we compute a sum, maximum and minimum
 %% $r_{\mbox{\small sum}}=\sum r_i, r_{\mbox{\small min}}=\min\{r_i\}, r_{\mbox{\small max}}=\max\{r_i\}$ as we compute the updated residuals $r_i$ in a streaming fashion. Constants
 %% $\mu,\nu$ are computed at the end of the loop as $\mu=r_{\mbox{\small sum}}/N$ and $\nu=\max\{|r_{\mbox{\small min}}-\mu|,|r_{\mbox{\small max}}-\mu|\}$. We performed a similar
 %% aggregation of all the vector operations listed on the lines mentioned.
 
-\noindent\textbf{Multithreading:} Most of the operations in our solver are trivially parallelizable, as they are order independent (excluding the boundary smoother). In order to parallelize the boundary Gauss-Seidel smoother, we tiled the domain with blocks of size $4\times 4\times 4$ which were subsequently red-black
+\paragraph{Multithreading:} Most of the operations in our solver are trivially parallelizable, as they are order independent (excluding the boundary smoother). In order to parallelize the boundary Gauss-Seidel smoother, we tiled the domain with blocks of size $4\times 4\times 4$ which were subsequently red-black
 colored. Subsequently, we parallelize the Gauss-Seidel sweep over the red blocks, distributing a balanced number of blocks to each processor, without fine-grain locking. Black blocks are
 processed in a separate parallel sweep. 
 %% This process is followed in the V-Cycle downstroke; naturally, we first process black blocks, then red, in the upstroke (reversing the
@@ -406,7 +407,7 @@ processed in a separate parallel sweep.
 Iterating the Gauss-Seidel smoother as many as 10 times within each block costs less than twice
 the cost of a single iteration (due to cache effects) which further improved the efficiency of our preconditioner.
 
-\noindent\textbf{Variable reuse and storage footprint:} Our methodology reuses vector variables to minimize the memory footprint. We only
+\paragraph{Variable reuse and storage footprint:} Our methodology reuses vector variables to minimize the memory footprint. We only
 require (and reuse) the following 5 vector variables, defined over the entire domain: $\vec{x}$ (for initial guess and solution), $\vec{r}$ (for initial right hand side, subsequent residuals and also
 the right-hand side $\vec{b}^{(0)}$ at the top level of the V-Cycle), $\vec{p},\vec{z}$ (reused throughout CG, also used as the solution $\vec{u}^{(0)}$ at the finest V-Cycle level)
 and $\boldsymbol{\delta}$ (reused to hold the residual $\vec{r}$ within the V-Cycle). Vector variables
