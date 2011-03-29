@@ -1,30 +1,30 @@
-\begin{figure*}[tb]
+\begin{figure}[tb]
 \center{\includegraphics[width=1\linewidth]{elasticity/figures/handfigure}}
-\caption{Top: A hand rigged using linear blend skinning. Due to the many joints
+\caption[A hand rigged using linear blend skinning and our method.]{Top: A hand rigged using linear blend skinning. Due to the many joints
 it is impractical to model all the shapes necessary fix the artifacts using an
 example based technique like PSD. To compensate, a significant amount of effort was
 spent on creating a nice skin bind for this hand. Bottom: The same hand rigged with our
 elasticity based deformer using 117,607 non-empty cells. Note how we get correct creasing and contact
 deformation where the finger bends.}
 \label{fig:hand}
-\end{figure*}
+\end{figure}
 
 
-\textbf{Initial guess.} A very significant source of optimization is the choice of initial guess because
+\paragraph{Initial guess.} A very significant source of optimization is the choice of initial guess because
 we use iterative methods.  To make solutions deterministic and completely frame
 independent we considered the use of a base linear blend skin as an initial
 guess. However, this can lead to unstable behavior in the presence of large
 contact deformations because collision resolution is path dependent. Instead, we therefore use the previous
 solution (often the previous frame) as an initial guess. 
 
-\textbf{CPU.} To improve performance on the CPU we utilized multithreading using a task
+\paragraph{CPU.} To improve performance on the CPU we utilized multithreading using a task
 queue. We designed our access patterns to be cache friendly by using blocking
 techniques.  We also exploited SSE data level parallelism for the SVD
 computation. Additionally, we used templatization to optimize stride
 multiplication computations in array accesses. Constraint contributions to the
 matrix were baked into a structure that minimized indirection.
 
-\textbf{GPU.} Since GPUs have become popular for parallel numerical algorithms, we did a
+\paragraph{GPU.} Since GPUs have become popular for parallel numerical algorithms, we did a
 na\"{i}ve port of our CPU oriented code to the GPU. Our expertise at optimizing
 for the GPU's different bandwidth versus computation tradeoffs was limited, and
 we hope to utilize the grid optimization techniques of \cite{Dick:2011:CUDAFEM}
@@ -41,10 +41,13 @@ V-cycles were sufficient for the Newton-Raphson solver to converge.
 \subsection{Diagonal part of stiffness matrix}
 
 The Jacobi iteration used as the smoother in our multigrid scheme requires explicit knowledge of the diagonal part of the stiffness matrix $\mathbf{K}$. Since we never construct this
-matrix explicitly, a specialized process needs to be followed to compute the diagonal part directly and efficiently. We will provide the final result here, and refer the interested reader
-to the accompanying technical document for the detailed algebraic derivation. For element $\Omega_e$ we will define the contribution of each of the 24 degrees of freedom to the diagonal
+matrix explicitly, a specialized process needs to be followed to compute the diagonal part directly and efficiently. 
+
+For element $\Omega_e$ we will define the contribution of each of the 24 degrees of freedom to the diagonal
 part of $\mathbf{K}$. In particular, we turn our attention to the degree of freedom $x_i^{(j)}$, that is the $j$-th component of the $i$-th element vertex, where
-$i\in\{1,\ldots,8\}$. Also, define $\vec{g}$ to be the $i$-th \emph{column} of the discrete gradient $\mathbf{G}$, and $\vec{r}^T$ the $j$-th \emph{row} of $\mathbf{R}$. Also, define
+$i\in\{1,\ldots,8\}$ (see Figure~\ref{fig:cubic_element}). 
+
+Also, define $\vec{g}$ to be the $i$-th \emph{column} of the discrete gradient $\mathbf{G}$, and $\vec{r}^T$ the $j$-th \emph{row} of $\mathbf{R}$. Also, define
 $\mathbf{M}_i=\mathcal{E}:\vec{g}$ (i.e.\ the right-side cross product matrix with $\vec{g}$). Also define
 $
 \mathbf{N}_i=\lambda\vec{g}\vec{g}^T+\mathbf{M}_i^T\mathbf{L}\mathbf{M}_i.

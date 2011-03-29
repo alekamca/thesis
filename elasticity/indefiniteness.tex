@@ -86,14 +86,17 @@ $$
 $$
 =\mathcal{E}\!:\!\mathbf{L}\!:\!\mathcal{E}^T,\ \mbox{where}\ \mathbf{L}=\mu\mathbf{I}+\left\{\lambda\tr(\mathbf{S}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{S})\mathbf{I}\!-\!\mathbf{S}\right\}^{-1}
 $$
+
 $\mathcal{E}$ is also an orthogonal (although not orthonormal) tensor, thus the definiteness of $\mathcal{T}_{\mbox{\small skew}}$ is equivalent with the definiteness of the $3\times 3$ 
 symmetric matrix $\mathbf{L}$, which can be easily projected to its positive definite part. In fact, if the method we used to compute the polar decomposition were to first compute the
 entire SVD $\mathbf{F}=\mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ of the deformation gradient, then we have $\mathbf{L}=\mathbf{V}\mathbf{L}_D\mathbf{V}^T$ where
 $$
 \mathbf{L}_D=\mu\mathbf{I}+\left\{\lambda\tr(\mathbf{\Sigma}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{\Sigma})\mathbf{I}\!-\!\mathbf{\Sigma}\right\}^{-1}
 $$
-is a diagonal matrix, whose diagonal matrices simply need to be clamped to zero, to ensure definiteness for $\mathbf{L}$, for $\mathcal{T}_{\mbox{\small skew}}$ and ultimately for the entire
-element stiffness matrix. In practical implementation, the matrix $\mathbf{L}$, projected to its semi-definite component, is precomputed and stored at the same time when the Polar Decomposition
+is a diagonal matrix, whose diagonal entries simply need to be clamped to zero, to ensure definiteness for $\mathbf{L}$, for $\mathcal{T}_{\mbox{\small skew}}$ and ultimately for the entire
+element stiffness matrix. 
+
+In practical implementation, the matrix $\mathbf{L}$, projected to its semi-definite component, is precomputed and stored at the same time when the Polar Decomposition
 of each element is performed. Then, the definitions of this section are followed to successively construct 
 $\delta\hat{\mathbf{P}}_{\mbox{\small sym}}$ and \ $\delta\hat{\mathbf{P}}_{\mbox{\small skew}}$, using equations (\ref{eqn_dp_sym}),(\ref{eqn_dp_skew}), and ultimately
 $\delta\mathbf{P}=\mathbf{R}\delta\hat{\mathbf{P}}$. 
@@ -107,13 +110,17 @@ respectively, we then have:
 E_\Delta^U&=&\mu h^2\sum_{i=1}^2\left((F_{i1}^e)^2+(F_{i2}^e)^2\right)\\
 &=&\mu h^2\sum_{i=1}^2\left((\frac{F_{i1}^A+F_{i1}^B}{2})^2+(\frac{F_{i2}^C+F_{i2}^D}{2})^2\right)
 \end{eqnarray*}
-$$
+\begin{equation}\label{eqn:stable_definite}
 E_\Delta^U-E_\Delta^S\stackrel{\mbox{\small(\ref{eqn_quadrature_poisson})}}{=}\mu h^2\sum_{i=1}^2\left((\frac{F_{i1}^A-F_{i1}^B}{2})^2+(\frac{F_{i2}^C-F_{i2}^D}{2})^2\right)\geq 0
-$$
+\end{equation}
 Thus, we can interpret our stable discretization as adding the unconditionally convex term $E_\Delta^U-E_\Delta^S$ to the unstable energy discretization of the single-point
-approach. The indefiniteness fix described in the context of the unstable method can also be interpreted as augmenting the real stiffness matrix with a supplemental term
-$\mathbf{K}\gets\mathbf{K}+\mathbf{K}_{\mbox{\small supp}}$ that guarantees the definiteness of the resulting matrix. The last equation indicates that if the same
-``definiteness-boosting'' matrix $\mathbf{K}_{\mbox{\small supp}}$ is added to the stable discretization, definiteness will be guaranteed. Algorithm \ref{alg_indefiniteness_fix}
+approach. 
+
+The indefiniteness fix described in the context of the unstable method can also be interpreted as augmenting the real stiffness matrix with a supplemental term
+$\mathbf{K}\gets\mathbf{K}+\mathbf{K}_{\mbox{\small supp}}$ that guarantees the definiteness of the resulting matrix.  Equation~(\ref{eqn:stable_definite})  indicates that if the same
+``definiteness-boosting'' matrix $\mathbf{K}_{\mbox{\small supp}}$ is added to the stable discretization, definiteness will be guaranteed. 
+
+Algorithm \ref{alg_indefiniteness_fix}
 summarizes the entire procedure that implements the ``auxiliary'' stress differential corresponding to the $\Psi_{\mbox{\small aux}}$ energy component. The differential of the
 additional force due to the Laplace term $\Psi_\Delta$ are computed as described in section \ref{sec:stabilization}.
 \begin{algorithm}[h]
@@ -122,7 +129,8 @@ additional force due to the Laplace term $\Psi_\Delta$ are computed as described
 \begin{algorithmic}[1]
 \Function{Compute\_L}{$\mathbf{\Sigma},\mathbf{V},\mu,\lambda,\mathbf{L}$}
 \State $\mathbf{L}_D\gets\left\{\lambda\tr(\mathbf{\Sigma}\!-\!\mathbf{I})\!-\!2\mu\right\}\left\{\tr(\mathbf{\Sigma})\mathbf{I}\!-\!\mathbf{\Sigma}\right\}^{-1}$
-\State Clamp diagonal elements of $\mathbf{L}_D$ to a minimum value \\\nonumber\hspace*{.25in}of $(-\mu)$\Comment{Term $\Psi_\Delta$ will boost this eigenvalue by $\mu$}
+\State Clamp diagonal elements of $\mathbf{L}_D$ to a minimum value
+of $(-\mu)$\Comment{Term $\Psi_\Delta$ will boost this eigenvalue by $\mu$}
 \State $\mathbf{L}\gets\mathbf{V}\mathbf{L}_D\mathbf{V}^T$
 \EndFunction
 \Function{dPauxDefiniteFix}{$\delta\mathbf{F},\mathbf{R},\mathbf{L}$}\Comment{Returns $\delta \mathbf{P}_{\mbox{\small aux}}$}

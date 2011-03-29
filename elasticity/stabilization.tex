@@ -58,7 +58,7 @@ E_1=\frac{\mu h^2}{2}\sum_{i=1}^2\left((F_{i1}^A)^2\!+\!(F_{i1}^B)^2\!+\!(F_{i2}
 \label{eqn_quadrature_poisson}
 \end{equation}
 \begin{equation}
-E_2=\mu h^2\left[-2\tr\left(\mathbf{R}^{eT}\mathbf{F}^e\right)+\mu\|\mathbf{I}\|_F^2\right]
+E_2=\mu h^2\left[-2\tr\left(\mathbf{R}^{eT}\mathbf{F}^e\right)+\|\mathbf{I}\|_F^2\right]
 \label{eqn_quadrature_aux}
 \end{equation}
 The energy discretization suggested by equations (\ref{eqn_quadrature_poisson}) and (\ref{eqn_quadrature_aux}) is stable, as seen by our results and the convergent multigrid schemes
@@ -66,7 +66,7 @@ we have constructed on its basis. In order to better explain the
 mechanics of this approach, we manipulate the $\mu$-component of the
 energy density as follows:
 $$
-\Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2=\mu\|\mathbf{F}\|_F^2-2\mu\tr\left(\mathbf{R}^T\mathbf{F}\right)+\|\mathbf{I}\|_F^2.
+\Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2=\mu\left(\|\mathbf{F}\|_F^2-2\tr\left(\mathbf{R}^T\mathbf{F}\right)+\|\mathbf{I}\|_F^2\right).
 $$
 Equation (\ref{eqn_quadrature_poisson}) suggests a quadrature rule for the term $\mu\|\mathbf{F}\|_F^2$. The integral $\frac{1}{2}\int\|\mathbf{F}\|_F^2$ is the weak form of the
 component-wise Laplace operator; thus equation (\ref{eqn_quadrature_poisson}) generates an energy discretization for the Laplace operator $2\mu\Delta$. Equation
