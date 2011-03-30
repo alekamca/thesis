@@ -19,8 +19,8 @@ define coarse forces $\vec{f}^{2h}(\vec{x}^{2h})=-\partial\Psi^{2h}/\partial\vec
 encode these in a matrix-free fashion as before. 
 
 The challenge however is that the entries in $\mathbf{K}^{2h}$ depend on the current estimate of the solution and, more accurately, on a
-\emph{coarse grid} version $\vec{x}^{2h}$ of this estimate. The general methodology is to define yet another restriction operator $\hat{\mathcal{R}}$ (possibly different than the
-$\mathcal{R}$ used to restrict residuals) to downsample the solution estimate as $\vec{x}^{2h}=\hat{\mathcal{R}}\vec{x}^h$. However, as a consequence of our geometric domain coarsening
+\emph{coarse grid} version $\vec{x}^{2h}$ of this estimate. The general methodology is to define yet another restriction operator $\hat{\mathbf{R}}$ (possibly different than the
+one used to restrict residuals) to downsample the solution estimate as $\vec{x}^{2h}=\hat{\mathbf{R}}\vec{x}^h$. However, as a consequence of our geometric domain coarsening
 as described, the discrete domain \emph{grows} in size, as coarse cells with any interior children will now be considered fully interior, even if they include some
 exterior cells from the fine grid. Therefore, restricting the approximation $\vec{x}^h$ would require extrapolation of the deformation field. We found such extrapolations to be
 quite unstable, especially in the presence of collisions, and sometimes even ill-defined near concave, high curvature boundaries.

@@ -36,12 +36,14 @@ $$
 $$
 where $\mathcal{T}=[T_{ijkl}]$ is the fourth order tensor defined as the stress derivative $\mathcal{T}:=\partial\mathbf{P}/\partial\mathbf{F}$, or $T_{ijkl}=\partial P_{ij}/\partial
 F_{kl}$. We then write:
-\begin{align*}
--\delta\vec{x}^T\delta\vec{f}&=-\sum_{i,j}\delta f_i^{(j)}\delta x_i^{(j)}\\
+\begin{align}
+-\delta\vec{x}^T\delta\vec{f}&=-\sum_{i,j}\delta f_i^{(j)}\delta x_i^{(j)}\nonumber\\
 &=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\sum_iG_{ki}^e\delta
-x_i^{(j)}\\
-&=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\delta F^e_{jk}
-\end{align*}
+x_i^{(j)}\nonumber\\
+&=V_e\!\!\sum_{j,k,l,m}\!\!T_{jklm}\delta F^e_{lm}\delta
+F^e_{jk}\nonumber\\
+&=V_e\delta\mathbf{F}:\mathcal{T}:\delta\mathbf{F}\label{eqn:K_relation_to_T}
+\end{align}
 Thus, $\mathbf{K}^e$ will be positive semi-definite, if and only if the fourth order tensor $\partial\mathbf{P}/\partial\mathbf{F}$ is positive definite as well (in the sense that
 $\delta\mathbf{F}:\mathcal{T}:\delta\mathbf{F}\geq 0$, for all
 $\delta\mathbf{F}$). 
