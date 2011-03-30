@@ -3,9 +3,14 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{color}
-\usepackage{shapepar}
-\usepackage{wrapfig}
 \usepackage[labelfont=bf,textfont=it]{caption}
+
+\usepackage{ifpdf}
+\ifpdf
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\else
+\fi
 
 \newcommand{\tr}{\ensuremath{\mbox{tr}}}
 \newcommand{\plusequals}{\,\,+\!\!=}

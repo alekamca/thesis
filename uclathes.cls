@@ -679,6 +679,19 @@
 \@namedef{table*}{\@tablestrue\@dblfloat{table}}
 \@namedef{endtable*}{\end@dblfloat}
 
+% ALGORITHM
+\newcounter{algorithm}[chapter]
+\def\thealgorithm{\thechapter.\@arabic\c@algorithm}
+
+\def\fps@algorithm{tbp}
+\def\ftype@algorithm{2}
+\def\ext@algorithm{lot}
+\def\fnum@algorithm{Algorithm \thealgorithm}
+\def\algorithm{\@algorithmstrue\@float{algorithm}}
+\let\endalgorithm\end@float
+\@namedef{algorithm*}{\@algorithmstrue\@dblfloat{algorithm}}
+\@namedef{endalgorithm*}{\end@dblfloat}
+
 
 %    ****************************************
 %    *            PAGE STYLES               *
