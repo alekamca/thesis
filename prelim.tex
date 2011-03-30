@@ -1,4 +1,5 @@
-\title{Efficient solutions to voxelized discretizations of elliptic problems arising from }
+\title{Efficient solutions to voxelized discretizations of elliptic
+problems with applications to physical simulation in visual effects}
 \author{Aleka Anne McAdams}
 \department{Mathematics}
 \degreeyear{2011}
@@ -31,4 +32,22 @@
 \publication {``Detail Preserving Continuum Simulation of Straight Hair'', A.\ McAdams, A.\ Selle, K.\ Ward, E.\ Sifakis, and J.\ Teran, ACM Trans.\ Graph.\ (SIGGRAPH Proc.), 2009.}
 
 %%%%%% Abstract %%%%%%
-\abstract{tbd}
+\abstract{The introduction of physical simulation to visual effects
+applications has given rise to new challenges.  In contrast to most
+engineering and computational physics applications, lower order models are
+typically preferred with an emphasis on fast, visually compelling
+effects over more accurate results. To this
+end, artist-tunable material parameters as well as fast turnaround
+times are needed, further emphasizing a need for efficient
+algorithms. We present a number of simulation
+techniques and numerical solvers targeted to visual effects. In
+particular, we
+introduce a parallel
+multigrid-preconditioned conjugate gradients algorithm for Poisson's
+equation on voxelized domains and demonstrate applications to the simulation of
+incompressible flows including smoke and free surface fluids; we
+present a hair collision algorithm which utilizes incompressible flow
+techniques to precondition geometric hair collisions, allowing an
+unprecedented number of hairs to be simulated; and finally, we introduce a new parallel multigrid
+solver for corotational linear elasticity on voxelized domains and apply the solver to the problem of skeleton-driven,
+collision-aware character skinning.}
