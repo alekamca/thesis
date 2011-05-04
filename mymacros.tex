@@ -18,3 +18,16 @@
 \newcommand{\AM}[1]{\pdfmarginpar[color={[0.2 0.2 0.75]}{AM: #1}}
 
 \addtolength{\belowcaptionskip}{12pt}
+
+\iffalse
+%\iftrue
+\newcommand{\newtext}[1]{\hl{#1}}
+\newcommand{\oldtext}[1]{\st{#1}}
+\newcommand{\newmath}[1]{\colorbox{green}{\ensuremath{#1}}}
+\newcommand{\oldmath}[1]{\colorbox{red}{\ensuremath{#1}}}
+\else
+\newcommand{\newtext}[1]{#1}
+\newcommand{\oldtext}[1]{}
+\newcommand{\newmath}[1]{\ensuremath{#1}}
+\newcommand{\oldmath}[1]{}
+\fi

@@ -1,15 +1,15 @@
-The previously discussed demand for high-resolution simulation with optimal
+The \oldtext{previously discussed} demand for high-resolution simulation with optimal
 performance and robustness motivated the development of our novel co-rotational
 elasticity discretization. Following \cite{Chao:2010:SGM}, we use an accurate
 treatment of force derivatives to yield a more robust solver than the
 simplified warped-stiffness techniques. We show that these careful
 linearizations can be done both cheaply and simply and are essential for our desired
-robustness and efficiency. We perform our discretization over a
+robustness and efficiency. We perform \oldtext{our}\newtext{the} discretization over a
 uniform hexahedral lattice  (rather than an unstructured tetrahedral one) to
 facilitate performance on modern hardware. Although standard methods for
 hexahedra require 8 point Gauss quadrature per cell for stability, we develop a
 much more efficient one-point quadrature discretization
-(section~\ref{sec:stabilization}).
+(section~\ref{sec:stabilization}).  \newtext{We begin with a quasistatic time stepping scheme, but our method can be trivially extended to dynamic simulations, as show in section~}\ref{sec:dynamics}.
 
 \subsection{Fundamentals}
 \label{sec:fundamentals}
@@ -63,14 +63,14 @@ a \emph{discrete gradient}
 \end{array}
 \right).
 $$}
-Finally, we have a means to compute the total energy in terms only of the nodal world positions of our hexahedral lattice.
+\oldtext{Finally}\newtext{Thus}, we have a means to compute the total energy in terms only of the nodal world positions of our hexahedral lattice.
 
 
 
 \begin{figure}[th]
 \center{\includegraphics[width=.7\linewidth]{elasticity/figures/warpedcomp}}
-\caption{Inexact methods of computing force differentials lead to instabilities
-unlike our method}
+\caption{Inexact methods of computing force differentials lead to instabilities\newtext{, even with moderate Poisson's ratio (0.3),}
+unlike our method. \newtext{In this example, instabilities occur at $2.4\times$ stretch, which is common near joints in skinning applications.}}
 \label{fig:warpedstiff}
 \end{figure}
 
@@ -87,7 +87,7 @@ A discrete force per node can in general be written as
  Using equation (\ref{eqn_discrete_gradient}) and the fact that $\Psi$ is a function of the deformation gradient alone, a concise expression for each of the components
 of $\vec{f}_i^e=(f_i^{(1)},f_i^{(2)},f_i^{(3)})$ (the force contribution to node $i$ from element $e$) is: 
 \begin{eqnarray}
-f_i^{(j)}\!\!\!&\!\!\!=\!\!\!&\!\!\!-\frac{\partial E_e}{\partial\vec{x}_i^{(j)}}=-V_e\frac{\partial\Psi(\mathbf{F}^e)}{\partial\vec{x}_i^{(j)}}
+\vec{f}_i^{(j)}\!\!\!&\!\!\!=\!\!\!&\!\!\!-\frac{\partial E_e}{\partial\vec{x}_i^{(j)}}=-V_e\frac{\partial\Psi(\mathbf{F}^e)}{\partial\vec{x}_i^{(j)}}
 =
 -V_e\sum_{k,l}\left.\frac{\partial\Psi}{\partial F_{kl}}\right|_{\mathbf{F}^e}\frac{\partial F_{kl}^e}{\partial\vec{x}_i^{(j)}} \nonumber \\
 \!\!\!&\!\!\!=\!\!\!&\!\!\!

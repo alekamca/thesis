@@ -184,5 +184,13 @@ $\mathbf{U\Sigma}$ are sorted in descending order of magnitude by permuting them
 control flow, and can also be highly vectorized. We refer the interested reader
 to the supplemental technical document attached to \cite{mcadams:2011:elasticity} for full analysis and implementation.
 
+\newtext{We contrast this procedure to the simpler approach that computes the rotational factor as $\mathbf{R}=\mathbf{FS}^{-1}$, as demonstrated for example in} \cite{Rivers:2007:FFL}. \newtext{Although
+quite efficient, such a treatment is not robust for our intended simulation task, where flattened or inverted elements are commonplace; in the case of an inverted element, where
+$\det(\mathbf{F})<0$ the formula $\mathbf{R}=\mathbf{FS}^{-1}$ would produce a matrix $\mathbf{R}$ that includes a reflection (i.e. $\det(\mathbf{R})=-1$) which violates the proper
+semantics of the corotated formulation, and inhibits untangling of inverted elements in practice. Similarly, for flattened elements the factor $\mathbf{S}$ is near-singular, which
+jeopardizes the orthogonality of the computed matrix $\mathbf{R}$. Methods that produce the polar decomposition robustly in the case of singular or inverted $\mathbf{F}$ (using cross
+products to generate perfect rotations) will typically resort to case analysis, preventing effective vectorization. In contrast, our} \oldtext{The} Givens QR factorization has a
+completely deterministic control flow, and can also be trivially vectorized. We refer the interested reader to the supplemental technical document for full analysis and
+implementation\oldtext{.}\newtext{, including a comparison with existing iterative and closed form solvers.} 
 %  a robust mathematical analysis of our proposed method, and
 %detailed implementation instructions. 

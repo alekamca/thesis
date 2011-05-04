@@ -31,10 +31,12 @@ We remedy this instability by proposing a new integration rule that is
 stable yet computationally cheap (requires only one polar decomposition per cell). As an initial observation, we have experimentally verified that the term $\mu\|\mathbf{F}-\mathbf{R}\|_F^2$ in equation (\ref{eqn_energy_F}) is
 the one which primarily determines stability; we observed that if a stable technique (e.g.\ 8-point Gauss quadrature) is used to integrate this term, the entire scheme will remain
 stable, even if the naive 1-point quadrature is used for the term  $\frac{\lambda}{2}\tr^2(\mathbf{R}^T\mathbf{F}-\mathbf{I})$. Thus, we will initially present our approach in the context
-of the simpler energy $\Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2$, and address the 2D case first (e.g.\ on a square lattice). In addition to the cell center $\vec{p}^e$ we introduce four
-additional quadrature points $\vec{p}^q,\ q\in\{A,B,C,D\}$, located on
-edge centers of the quadrilateral lattice, as seen in figure
-(\ref{fig_quadrature}). We write the energy density as
+of the simpler energy \newtext{density }$\Psi=\mu\|\mathbf{F}-\mathbf{R}\|_F^2$, and address the 2D case first (\oldtext{e.g.}\newtext{i.e.,}\ on a square lattice). 
+
+
+
+\newtext{The use of staggered grids to avoid instability from non-physical modes when using central differencing can be seen in many Eulerian fluid dynamics methods.  }\cite{harlow:1965:MAC}\newtext{ introduced the staggered MAC grid for velocities and pressure, and }\cite{gerritsma:1996:viscoelastic,Goktekin:2004:viscoelastic}\newtext{ extended this to viscoelastic fluids by staggering the second order stress or strain tensors. Similarly,}  \oldtext{in addition to the cell center $\vec{p}^e$} we introduce four
+additional quadrature points $\vec{p}^q,\ q\in\{A,B,C,D\}$, located on edge centers of the quadrilateral lattice as seen in figure (\ref{fig_quadrature}). We write \oldtext{the energy }\newtext{$\Psi$ }as
 \begin{equation}
 \Psi=\mu\sum_{i,j}
   (F_{ij}-R_{ij})^2.
@@ -45,7 +47,7 @@ $\vec{p}^e$ at the cell center, we will use those locations within the cell (pos
 of freedom. In this way, we avoid the averaging and risk of cancellation associated with expressing all derivatives exclusively at the cell center. From figure \ref{fig_quadrature} we
 observe that the $x$-derivatives $F_{11}$ and $F_{21}$ are naturally defined at the centers $\vec{p}^A,\vec{p}^B$ of $x$-oriented edges, while the $y$-derivatives $F_{12}$ and $F_{22}$
 are naturally located at points $\vec{p}^C$ and $\vec{p}^D$. We also evaluate the cell-centered deformation gradient $\mathbf{F}^e$ once more, following exactly equation
-(\ref{eqn_discrete_gradient}) as before. We compute matrix $\mathbf{R}^e$ from the Polar decomposition of $\mathbf{F}^e$, and use the information from this matrix wherever $R_{ij}$ is needed 
+(\ref{eqn_discrete_gradient}) as before. We compute matrix $\mathbf{R}^e$ from the polar decomposition of $\mathbf{F}^e$, and use the information from this matrix wherever $R_{ij}$ is needed 
 in equation (\ref{eqn_energy_only_mu}). Finally, our proposed quadrature method takes the form:
 \begin{equation}
 \!E_e=\frac{\mu h^2}{2}\sum_{i=1}^2\left[\sum_{q\in\{A,B\}}\!\!\!\!\left(F_{i1}^q\!-\!R_{i1}^e\right)^2+\!\!\!\!\sum_{q\in\{C,D\}}\!\!\!\!\left(F_{i2}^q\!-\!R_{i2}^e\right)^2\right].

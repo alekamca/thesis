@@ -1,10 +1,10 @@
-Symmetry of the stiffness matrix $\mathbf{K}$ allows the use of certain Krylov
+Symmetry of the stiffness matrix, $\mathbf{K}$, allows the use of certain Krylov
 methods, but positive definiteness is required for conjugate gradients. While
 $\mathbf{K}$ will be positive definite close to equilibrium (it is the energy
 Hessian), in practice Newton-Raphson may generate intermediate
 indefinite states. Like \cite{teran:2005:quasistatics}, we will modify
 $\mathbf{K}$ to guarantee definiteness while retaining the same nonlinear
-solution, a valid equilibrium configuration (though maybe via different iterates).
+solution\oldtext{, a valid equilibrium configuration} (though maybe via different iterates).
 % \RT{Is this true ? The Newton scheme  will still converge, but will it converge to the same solution ?}
 %This
 %modified Newton scheme does not change the computed nonlinear solution; the
