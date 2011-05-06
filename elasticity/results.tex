@@ -16,7 +16,7 @@ We tested our full system on a number of production-quality models, focusing on 
    surface mesh (not pictured) as input. Based on a hexahedral lattice (center)
    it then simulates a deformed surface (right) obeying self-collision and volumetric
    elasticity. The example shown here has 106,567 cells and simulates at 5.5
-   seconds per frame.}\label{fig:teaser}
+   seconds per frame. Images \copyright Disney. All rights reserved.}\label{fig:teaser}
 \end{figure}
 Our simulation is driven by rigid bones attached to the character's existing skeleton.  Simple geometric shapes such as cylinders or ellipsoids are sufficient to define the volumetric extent of these bones, and we found that using soft constraints with narrow bones gave the elasticity model freedom to produce appealing flesh-like shapes. More carefully modeled bones can be used as internal collision objects over which the material can slide, providing detail in regions such as the elbow or around the collarbone. Finally, our self collision handling not only prevents interpenetration, it also works with our elastic simulation to create realistic squishing and bulging behavior.  
 
@@ -35,7 +35,7 @@ For highly stylized characters, detailed underlying structures such as muscles a
   shrugs. In the bottom row, however, everything behaves as a connected
   entity. On the outside of the elbow we also get a nice protrusion of the ulna
   with our method as opposed to the more rubber-like behavior of the linear
-  blend skin. The simulation here is based on 30,904 non-empty cells.}
+  blend skin. The simulation here is based on 30,904 non-empty cells. Images \copyright Disney. All rights reserved.}
 \label{fig:thug}
 \end{figure*}
 In all examples, we found that 1-2 V-cycles with 5 relaxation sweeps
